@@ -692,21 +692,21 @@ def main():
                 v = float(pooled.loc[t, j])
                 if v != 0:
                     ev_pooled.append(dict(Timing=timing, Typology=t, **dict(zip(keys, key)), kg_per_m2=v))
-        if True:                                      # the A1-A3 component by item class (L10)
-            kc = ['Class', 'Age', 'S4', 'label', 'nz']
-            a = er[er['Component'] == EVENT_COMPONENTS[0]]
-            wc = a.pivot_table(index='id', columns=kc, values='kg_m2', aggfunc='sum').reindex(ids).fillna(0.0)
-            bc_ = wc.stack(kc, future_stack=True).rename('kg_per_m2').reset_index()
-            bc_ = bc_[bc_['kg_per_m2'] != 0]
-            bc_.insert(0, 'Timing', timing)
-            evc_bld.append(bc_)
-            cc = list(wc.columns)
-            fc = pd.DataFrame(wc.values, index=ids, columns=range(len(cc)))
-            fc['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in fc.index]
-            fc['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in fc.index]
-            pc = pool(fc, list(range(len(cc))))
-            evc_pooled += [dict(Timing=timing, Typology=t, **dict(zip(kc, key)), kg_per_m2=float(pc.loc[t, j]))
-                           for t in TYP_ORDER for j, key in enumerate(cc) if float(pc.loc[t, j]) != 0]
+        # the A1-A3 component by item class (L10)
+        kc = ['Class', 'Age', 'S4', 'label', 'nz']
+        a = er[er['Component'] == EVENT_COMPONENTS[0]]
+        wc = a.pivot_table(index='id', columns=kc, values='kg_m2', aggfunc='sum').reindex(ids).fillna(0.0)
+        bc_ = wc.stack(kc, future_stack=True).rename('kg_per_m2').reset_index()
+        bc_ = bc_[bc_['kg_per_m2'] != 0]
+        bc_.insert(0, 'Timing', timing)
+        evc_bld.append(bc_)
+        cc = list(wc.columns)
+        fc = pd.DataFrame(wc.values, index=ids, columns=range(len(cc)))
+        fc['Typology'] = [TYPOLOGY_OF[i.rsplit('_', 1)[0]] for i in fc.index]
+        fc['Subtype'] = [SUBTYPE_OF[i.rsplit('_', 1)[0]] for i in fc.index]
+        pc = pool(fc, list(range(len(cc))))
+        evc_pooled += [dict(Timing=timing, Typology=t, **dict(zip(kc, key)), kg_per_m2=float(pc.loc[t, j]))
+                       for t in TYP_ORDER for j, key in enumerate(cc) if float(pc.loc[t, j]) != 0]
     ev_pooled, ev_bld = pd.DataFrame(ev_pooled), pd.concat(ev_bld, ignore_index=True)
     evc_pooled, evc_bld = pd.DataFrame(evc_pooled), pd.concat(evc_bld, ignore_index=True)
     a13_ev = ev_pooled[ev_pooled['Component'] == EVENT_COMPONENTS[0]].groupby(['Timing', 'Typology'])['kg_per_m2'].sum()

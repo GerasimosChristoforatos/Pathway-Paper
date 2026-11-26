@@ -85,7 +85,7 @@ files, so the figures can be redrawn without the model (`run_all.py --figures-on
 | `engine.py` | the forward model as pure functions: stock identity, replacement path, overbuild absorption, forward run |
 | `events.py` | time-resolved B2/B4 events and the committed emissions after 2050 |
 | `bands.py` | the demand-band accounting of every run and the display bands |
-| `household_headship.py` | census headship by age group (2013, 2018, 2023; calibrated f and g), the TL headship rates and the L1 at TL household-size ratio path |
+| `household_headship.py` | census headship by age group (2013, 2018, 2023; calibrated f and g), the back-check, and the by-age L1 at TL sensitivity (household-size ratio path) |
 | `gap_2026.py` | decomposition of the observed 2026 building against the model |
 
 ### AESA
@@ -125,7 +125,6 @@ files, so the figures can be redrawn without the model (`run_all.py --figures-on
 | `tools/overbuild_2026.py`, `tools/replacement_scenarios.py`, `tools/reconciliation.py`, `tools/demand_balance.py`, `tools/figures_report.py` | the overbuild, the replacement variants, the accounting reconciliation, the market balance and the report figures' data |
 | `tools/lever_audit.py` | the lever consistency audit (nine checks; STOP on failure) |
 | `tools/check_outputs.py`, `tools/figure_manifest.py` | the final output check and the figure manifest |
-| `tools/check_figure_text.py`, `tools/palette_check.py`, `tools/palette_coverage.py`, `tools/ast_equivalence.py` | developer checks: figure text rules, colour vision, palette coverage, comment-only changes |
 
 ### Figures (`figures/`)
 

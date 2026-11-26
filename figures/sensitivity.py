@@ -1,7 +1,7 @@
 """Sensitivity figures (ED8, ED7, SF14), from the data files only.
 
-ED8 and ED7 carry row notes under the axes (row_notes_ed4 / row_notes_ed5): one line per shown row,
-saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
+ED8 and ED7 have row notes in their legends (FIGURES.md; row_notes_ed4 / row_notes_ed5), none drawn on the figure: one
+sentence per shown row, keyed by the row label, saying only what changes compared with the Reference. Every value is read from the model code (projection.py,
 Building_factors.py, boundaries.py, Sensitivity.py: the settings each row changes) and the committed outputs
 (baseline/projection.json and overbuild_2026.json settings, aesa/results.json settings, the case and basis columns);
 where a setting is recorded in the outputs it must equal the code, and a row label must agree with the setting it
@@ -148,10 +148,8 @@ PB_ROWS = {
 
 
 # ---------------------------------------------------------------------------
-# row notes of ED8 and ED7 (what each shown row changes compared with the Reference)
+# row notes of ED8 and ED7 (what each shown row changes compared with the Reference; legend text only)
 # ---------------------------------------------------------------------------
-NOTE_LINESPACING = 1.2           # line spacing of the notes (matplotlib linespacing; the pitch is measured, not assumed)
-NOTE_GUTTER_MM = 3.0              # clear space between the right end of a note column and the next column
 # WDI series and s_sec conventions as named in boundaries.py (a code the text does not know stops the figure)
 WDI_MEASURE = {'NY.GDP.PCAP.PP.KD': 'GDP per capita at purchasing-power parity, constant 2021 international $',
                'NY.GDP.PCAP.CD': 'GDP per capita in current US$'}
@@ -421,14 +419,9 @@ def row_notes_ed5(r):
     return n
 
 
-def tag(n):
-    """A row number as drawn: '[n]' (the end of the row label, the start of its note; captions and FIGURES.md)."""
-    return f'[{n}]'
-
-
 def note_lines(order, notes, label, fig):
-    """[(number, row id, note)] for every shown row of a tornado order, numbered 1, 2, ... top to bottom
-    (display order); every shown row has a note."""
+    """[(row label, row id, note)] for every shown row of a tornado order, top to bottom (display order); every shown
+    row has a note."""
     out = []
     for kind, item in order:
         if kind != 'row':
@@ -436,91 +429,13 @@ def note_lines(order, notes, label, fig):
         rid = item['id']
         if rid not in notes:
             _stop(fig, f'no row note for {rid!r}')
-        out.append((len(out) + 1, rid, notes[rid]))
+        out.append((' '.join(label(rid).split()), rid, notes[rid]))
     return out
 
 
-def caption_lines(numbered):
-    """'[1] <note>.' per numbered row (the text of the captions, FIGURES.md and the audit note)."""
-    return [f'{tag(n)} {t}.' for n, _, t in numbered]
-
-
-def numbered_label(numbered):
-    """The y tick label of a row, ending with its number ' [n]' (rows without a note: the label alone)."""
-    num = {rid: n for n, rid, _ in numbered}
-    return lambda rid: _input_label(rid).replace('$', r'\$') + (f' {tag(num[rid])}' if rid in num else '')
-
-
-NOTE_TEXT_SIZE = S.FONT_MIN + 0.5      # the row notes (pt)
-NOTE_NUMBER_GAP_MM = 1.0         # the note text starts this far right of the widest '[n]' (measured)
-
-
-def note_metrics(fig):
-    """(line pitch in inches, a function giving the rendered width of a string in inches) of the note text (FONT_MIN,
-    the figure font) as matplotlib lays it out: the pitch is the height a second line adds to a one-line text, so the
-    notes are spaced exactly as the lines inside a note, whatever the typeface."""
-    r = fig.canvas.get_renderer()
-    probe = dict(fontsize=NOTE_TEXT_SIZE, linespacing=NOTE_LINESPACING)
-    h = []
-    for s in ('Ag', 'Ag\nAg'):
-        t = fig.text(0, 0, s, **probe)
-        h.append(t.get_window_extent(r).height)
-        t.remove()
-    tw = fig.text(0, 0, '', **probe)
-
-    def width_in(s):
-        tw.set_text(s.replace('$', r'\$'))                  # measured as drawn (a literal dollar, not mathtext)
-        return tw.get_window_extent(r).width / fig.dpi
-    return (h[1] - h[0]) / fig.dpi, width_in, tw
-
-
-def wrap_measured(text, width_in, avail_in):
-    """Greedy word wrap of text so that every line's rendered width is at most avail_in (inches); a single word wider
-    than the column stops the figure (it would be clipped)."""
-    lines, cur = [], ''
-    for word in text.split():
-        cand = f'{cur} {word}' if cur else word
-        if width_in(cand) <= avail_in:
-            cur = cand
-            continue
-        if not cur:
-            raise SystemExit(f'STOP: a row-note word is wider than its column: {word!r}')
-        lines.append(cur)
-        cur = word
-        if width_in(cur) > avail_in:
-            raise SystemExit(f'STOP: a row-note word is wider than its column: {word!r}')
-    if cur:
-        lines.append(cur)
-    return lines
-
-
-def draw_notes(fig, numbered, title, top_frac, ncol=2):
-    """The row notes as a compact list below the axes, '[1] ...', '[2] ...' (the numbers those of the y labels), the
-    note text indented past the widest '[n]'; ncol columns filled top to bottom, a note never split. Each note is wrapped by its rendered width (the column width less the indent and a gutter) and
-    the notes are stacked at the measured line pitch, so no note overlaps the next. Returns the height used (mm)."""
-    if ncol != 2:
-        raise ValueError('draw_notes: two columns')
-    pitch_in, width_in, tw = note_metrics(fig)
-    W = fig.get_figwidth()
-    num_in = max(width_in(tag(n)) for n, _, _ in numbered)          # the '[n]' are right-aligned in this width
-    indent_in = num_in + NOTE_NUMBER_GAP_MM * S.MM
-    avail = (0.5 - 0.01) * W - indent_in - NOTE_GUTTER_MM * S.MM
-    wrapped = [[x.replace('$', r'\$') for x in wrap_measured(f'{t}.', width_in, avail)]   # a literal dollar
-               for _, _, t in numbered]
-    tw.remove()
-    n_ = [len(w) for w in wrapped]                        # the split (rows kept whole) with the shortest longer column
-    k = min(range(len(n_) + 1), key=lambda j: (max(sum(n_[:j]), sum(n_[j:])), j))
-    rows = max(sum(n_[:k]), sum(n_[k:]))
-    line = pitch_in / fig.get_figheight()
-    fig.text(0.01, top_frac, title, ha='left', va='top', fontsize=NOTE_TEXT_SIZE, fontweight='bold', color=S.INK)
-    for c, items in enumerate((list(zip(numbered, wrapped))[:k], list(zip(numbered, wrapped))[k:])):
-        x0, y = 0.01 + c / ncol, top_frac - line
-        for (n, _, _), w in items:
-            fig.text(x0 + num_in / W, y, tag(n), ha='right', va='top', fontsize=NOTE_TEXT_SIZE, color=S.INK)
-            fig.text(x0 + indent_in / W, y, '\n'.join(w),
-                     ha='left', va='top', fontsize=NOTE_TEXT_SIZE, color=S.INK, linespacing=NOTE_LINESPACING)
-            y -= len(w) * line
-    return (rows + 1) * pitch_in / S.MM
+def caption_lines(noted):
+    """'<row label>: <note>.' per shown row (the legend text of FIGURES.md and the audit note)."""
+    return [f'{lab}: {t}.' for lab, _, t in noted]
 
 
 def _collect(items):
@@ -539,10 +454,9 @@ def _input_label(rid):
     return N.INPUT_LABEL.get(rid, rid)
 
 
-ED8_H = 247                       # mm, with the row notes below the axes; at most style.MAX_HEIGHT
-ED7_H = 200                       # mm (two rows more: the window and whole-life rows)
-NOTES_TOP = 0.345                # the notes block occupies the figure below this fraction of its height (ED8)
-NOTES_TOP_ED7 = 0.22
+ED8_H = 245                       # mm: (a) the Reference tornado, (b) the Theoretical Limit block
+ED8_HEIGHT_RATIOS = (8.0, 1.0)
+ED7_H = 160                       # mm
 
 
 def ed4_rows():
@@ -570,15 +484,25 @@ def ed4_rows():
     return r, c0, order, note_lines(order, row_notes_ed4(r), _input_label, 'ED8')
 
 
+def tl_block():
+    """(TL central, rows) of ED8 panel b: the Theoretical Limit L10 sensitivities shown in the Extended Data
+    (sensitivity/tl_sensitivity.csv, extended_data), every other lever at TL."""
+    t = D.csv('sensitivity/tl_sensitivity.csv')
+    c = float(t.loc[t['run'] == 'TL', 'carbon_kt'].iloc[0])
+    rows = t[t['extended_data'].astype(bool) & (t['run'] != 'TL')]
+    return c, rows
+
 
 def ed4_one_at_a_time():
-    """ED8 (data D16): every one-at-a-time row of the Reference on the cumulative embodied carbon
-    2026-2050 (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv). the
-    rows of REF_NOT_SHOWN dropped from the display; the row notes below the axes."""
-    r, c0, order, numbered = ed4_rows()
-    lines = caption_lines(numbered)
-    fig, ax = plt.subplots(figsize=S.figsize('double', ED8_H))
-    P.tornado(ax, order, c0, numbered_label(numbered))
+    """ED8 (data D16): (a) every one-at-a-time row of the Reference on the cumulative embodied carbon 2026-2050
+    (kt CO2e) as a paired tornado grouped by category (sensitivity/reference_carbon.csv), the rows of REF_NOT_SHOWN
+    dropped from the display; (b) the Theoretical Limit L10 sensitivities against the central TL
+    (sensitivity/tl_sensitivity.csv). The row notes are legend text (FIGURES.md), not drawn."""
+    r, c0, order, noted = ed4_rows()
+    lines = caption_lines(noted)
+    fig, (ax, bx) = plt.subplots(2, 1, figsize=S.figsize('double', ED8_H),
+                                 gridspec_kw=dict(height_ratios=ED8_HEIGHT_RATIOS))
+    P.tornado(ax, order, c0, lambda rid: _input_label(rid).replace('$', r'\$'))
     ax.tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax.text(c0, 1.0, f' Reference {c0:,.0f} kt', transform=ax.get_xaxis_transform(), ha='left', va='bottom',
             fontsize=S.FONT_SMALL, color=S.INK)
@@ -586,16 +510,38 @@ def ed4_one_at_a_time():
     P.thousands(ax.xaxis)
     ax.legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax)
-    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP)
-    fig.tight_layout(rect=(0, NOTES_TOP + 0.01, 1, 1))
-    if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP:
-        raise SystemExit(f'STOP: ED8: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED8_H')
+    P.panel(ax, 'a', 'Reference', above_label=True)
+    ctl, tl = tl_block()
+    y = np.arange(len(tl))[::-1]
+    for yi, (_, x) in zip(y, tl.iterrows()):
+        v = float(x['carbon_kt'])
+        bx.barh(yi, v - ctl, left=ctl, height=0.55, color=S.MUTED, lw=0)
+        bx.text(v, yi, P.minus(f' {v:,.0f} kt ({float(x["change_vs_TL_pct"]):+.1f}%) '), va='center',
+                ha='right' if v < ctl else 'left', fontsize=S.FONT_SMALL, color=S.INK)
+    bx.axvline(ctl, color=S.TL, lw=S.LW)
+    bx.text(ctl, 1.0, f'{N.TL["TL"]} {ctl:,.0f} kt ', transform=bx.get_xaxis_transform(), ha='right', va='bottom',
+            fontsize=S.FONT_SMALL, color=S.INK)
+    bx.set_yticks(y)
+    bx.set_yticklabels(list(tl['row']), fontsize=S.FONT_SMALL)
+    lo = min(float(tl['carbon_kt'].min()), ctl)
+    hi = max(float(tl['carbon_kt'].max()), ctl)
+    pad = 0.35 * (hi - lo)
+    bx.set_xlim(lo - pad, hi + 0.15 * (hi - lo))
+    bx.set_ylim(-0.7, len(tl) - 0.3)
+    bx.set_xlabel('Cumulative embodied carbon 2026–2050 (kt CO₂e), every other lever at TL')
+    P.thousands(bx.xaxis)
+    P.panel(bx, 'b', 'Theoretical Limit: L10 sensitivities', above_label=True)
+    fig.tight_layout()
     S.save_figure(fig, 'ED8_one_at_a_time',
-                  note=f'Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
+                  note=f'(a) Reference {c0:,.0f} kt. One at a time: not additive, not a joint interval. "No effect": every '
                        f'case within {100 * P.NO_EFFECT_RTOL:.2f}% of the Reference. Not shown: the superseded-setting '
                        'rows (completion rate 0.95, completion lag 0 months and the never-absorbed overbuild) and ' + '; '.join(f"{t} ({float(r.loc[r['row'] == k, 'change_pct'].iloc[0]):+.4f}%)"
                                                      for k, t in ref_not_shown(r).items()) + ' (in the data file). Row notes: '
-                       + ' '.join(lines), source=['sensitivity/reference_carbon.csv'])
+                       + ' '.join(lines) + f' (b) {N.TL["TL"]} {ctl:,.1f} kt; '
+                       + '; '.join(f"{x['row']} {float(x['carbon_kt']):,.1f} kt, LoE AR {float(x['LoE_AR']):.3f}, "
+                                   f"P(LoE AR <= 1) = {100 * float(x['P_LoE_AR_at_most_1']):.2f}%"
+                                   for _, x in tl.iterrows()) + '.',
+                  source=['sensitivity/reference_carbon.csv', 'sensitivity/tl_sensitivity.csv'])
 
 
 def ed5_rows():
@@ -642,13 +588,13 @@ ED7_TITLES = {'LoE_AR': 'Acquired rights', 'LoE_AtP': 'Ability to pay'}
 
 def ed5_boundary_sensitivity():
     """ED7 (data D42): the boundary-definition and AESA rows on the cumulative LoE of AR (a) and of AtP
-    (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv). the rows of
-    PB_DROPPED dropped from the display; the row notes below the axes."""
-    r, st, c, orders, numbered = ed5_rows()
-    lines = caption_lines(numbered)
+    (b), paired tornados with shared y labels (sensitivity/planetary_boundary.csv); the rows of PB_DROPPED dropped
+    from the display. The row notes are legend text (FIGURES.md), not drawn."""
+    r, st, c, orders, noted = ed5_rows()
+    lines = caption_lines(noted)
     fig, ax = plt.subplots(1, 2, figsize=S.figsize('double', ED7_H), sharey=True)
     for a, q, xl, letter in ((ax[0], 'LoE_AR', N.LOE_AR, 'a'), (ax[1], 'LoE_AtP', N.LOE_ATP, 'b')):
-        P.tornado(a, orders[q], c[q], numbered_label(numbered), headers=(q == 'LoE_AR'))
+        P.tornado(a, orders[q], c[q], lambda rid: _input_label(rid).replace('$', r'\$'), headers=(q == 'LoE_AR'))
         a.text(c[q], 1.0, f' Reference {c[q]:.2f}', transform=a.get_xaxis_transform(), ha='left', va='bottom',
                fontsize=S.FONT_SMALL, color=S.INK)
         a.set_xlabel(f'{xl} 2026–2050')
@@ -656,10 +602,7 @@ def ed5_boundary_sensitivity():
     ax[0].tick_params(axis='y', labelsize=S.FONT_SMALL)
     ax[1].legend(handles=P.tornado_legend(), loc='lower right', fontsize=S.FONT_SMALL, frameon=False)
     P.centre_ticklabels(fig, ax[0])
-    notes_mm = draw_notes(fig, numbered, 'What each row changes compared with the Reference', NOTES_TOP_ED7)
-    fig.tight_layout(rect=(0, NOTES_TOP_ED7 + 0.01, 1, 1))
-    if notes_mm * S.MM / fig.get_figheight() > NOTES_TOP_ED7:
-        raise SystemExit(f'STOP: ED7: the row notes ({notes_mm:.0f} mm) do not fit below the axes; raise ED7_H')
+    fig.tight_layout()
     S.save_figure(fig, 'ED7_boundary_sensitivity',
                   note=f"Reference cumulative LoE of AR {c['LoE_AR']:.2f}, of AtP {c['LoE_AtP']:.2f}; AR base window "
                        f"central {st['AR_BASE_WINDOW'][0]}-{st['AR_BASE_WINDOW'][1]}. 'No effect': within "
@@ -670,8 +613,8 @@ def ed5_boundary_sensitivity():
 
 
 def row_note_caption(fid):
-    """The row notes of ED8 or ED7 as caption text ('[1] <note>. [2] ...'), from the same list the figure draws (the
-    captions of FIGURES.md take them from here)."""
+    """The row notes of ED8 or ED7 as legend text ('<row label>: <note>. ...'), in display order (the captions of
+    FIGURES.md take them from here)."""
     numbered = {'ED8': lambda: ed4_rows()[3], 'ED7': lambda: ed5_rows()[4]}[fid]()
     return ' '.join(caption_lines(numbered))
 

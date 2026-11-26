@@ -338,10 +338,6 @@ def sf2_stock_vacancy():
     if not np.isclose(last['parts']['market_balance'], ss['r_after'], rtol=1e-9):
         raise SystemExit(f"STOP: ED4b: the {_yrs(*last['years'])} market balance "
                          f"({last['parts']['market_balance']:,.1f}) is not the F1 residual ({ss['r_after']:,.1f}).")
-    a.text(last['centre'], last['up'] / 1e3, '†', ha='center', va='bottom', fontsize=S.FONT_SMALL, color=S.INK)
-    a.annotate(f"1986–91 not covered (calibration starts 1991)\n† {_yrs(*last['years'])}: households = population /\n"
-               'household size (model), not census-benchmarked', (0, 0.02), xycoords='axes fraction', xytext=(3, 0),
-               textcoords='offset points', fontsize=S.FONT_MIN, color=S.MUTED)      # 3 pt clear of the spine
     P.split(a)
     a.set_xlim(b['xlim'])
     a.set_ylabel('Dwellings (thousand per year)')
@@ -362,7 +358,8 @@ def sf2_stock_vacancy():
     sm = D.js('baseline/scenarios.json')['meta']              # the projection's replacement rates (%/yr)
     hist_note = (f'History: one column per census interval (interval means; vacancy on one definition, the pooled '
                  f"2018/2023 empty share, {100 * d['pooled_share']:.1f}% of unoccupied dwellings); between censuses "
-                 f'annual detail is not identified. The {census_y[-1] + 1}–{int(YH[-1])} column (marked †): households '
+                 f'annual detail is not identified; 1986-91 is not covered (the calibration starts in 1991). '
+                 f'The {census_y[-1] + 1}–{int(YH[-1])} column: households '
                  'are population / household size (model), not census-benchmarked; its market balance '
                  f"({ss['r_after']:,.0f} dwellings a year) is the F1 residual, carried into 2026 as the starting surplus "
                  f"({ss['dwellings']:,.0f} dwellings). Pipeline years {', '.join(str(y) for y in b['pipeline'])}: annual columns; "

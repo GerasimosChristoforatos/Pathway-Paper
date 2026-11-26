@@ -12,6 +12,8 @@ Writes outputs/data/sensitivity/:
   household_size.csv       the Reference, the Moderate / Ambitious Pathway and TL under the household-size
                            sensitivities (Stats NZ Medium B: living-arrangement propensities change; 2018-2023
                            census pace, linear from 2023)
+  tl_sensitivity.csv       the Theoretical Limit sensitivities (every other lever at TL; Supplementary Table 13; the L10
+                           rows also in ED8 panel b), deterministic and with the pathway Monte Carlo P(LoE AR <= 1)
   tornado.csv              Fig7a: the inputs of the Reference tornado (low / high), cumulative carbon and the
                            cumulative LoE AR and AtP (the budgets move only with the population path)
 
@@ -351,6 +353,45 @@ def loe_2028_2050():
     return pd.DataFrame(rows)
 
 
+# ---- 3b. Theoretical Limit sensitivities (Supplementary Table 13; ED8 b) -----------------------------
+# (run id in runs.csv, Monte Carlo run in montecarlo_draws.csv or None, row label, shown in the Extended Data, basis)
+TL_ROWS = [
+    ('TL', 'TL', 'Theoretical Limit (central)', True, 'every lever at Level 4 (levers.TL_RULE)'),
+    ('TL-L10-all-classes', 'TL_L10_all_classes', LV.L10_TL_VARIANTS['all_classes']['label'], True,
+     LV.L10_TL_VARIANTS['all_classes']['basis']),
+    ('TL-L10-share-100', 'TL_L10_share_100', LV.L10_TL_VARIANTS['share_100']['label'], True,
+     LV.L10_TL_VARIANTS['share_100']['basis']),
+    ('TL-L1-by-age', 'TL_L1_by_age', 'L1 at TL: lowest observed census headship by age', False,
+     'the lowest observed census headship of each age group (2013-2023), or the Stats NZ propensity-B rate where '
+     'lower, on the projected age structure; the speed limit and never below L1 Ambitious (household_headship.py)'),
+    ('TL-from2027', 'TL_from2027', 'Instant TL (every level from 2027)', False, 'no adoption window'),
+    ('TL-reoccupation-fast', None, 'Re-occupation as fast as demand allows', False,
+     'the re-occupation pool meets each year\'s need as far as it can (deterministic only)')]
+
+
+def tl_sensitivity():
+    """tl_sensitivity.csv: the Theoretical Limit sensitivities (every other lever at TL), deterministic
+    (pathways/runs.csv) and P(LoE AR <= 1) over the pathway Monte Carlo draws with its Wilson 95% interval."""
+    import mcstats
+    r = pd.read_csv(data('pathways/runs.csv'))
+    r = r[r['scenario'] == 'REF'].set_index('run')
+    d = pd.read_csv(data('pathways/montecarlo_draws.csv'))
+    c0 = float(r.loc['TL', 'carbon_kt'])
+    rows = []
+    for run, mc, label, ed, basis in TL_ROWS:
+        x = r.loc[run]
+        row = dict(run=run, row=label, extended_data=ed, carbon_kt=float(x['carbon_kt']), LoE_AR=float(x['LoE_AR']),
+                   LoE_AtP=float(x['LoE_AtP']), change_vs_TL_pct=100.0 * (float(x['carbon_kt']) / c0 - 1.0),
+                   P_LoE_AR_at_most_1=np.nan, wilson_lo=np.nan, wilson_hi=np.nan, n_draws=0, basis=basis)
+        if mc is not None:
+            v = d[f'{mc}_LoE_AR'].to_numpy(float)
+            k, n = int((v <= 1.0).sum()), len(v)
+            lo, hi = mcstats.wilson(k, n)
+            row.update(P_LoE_AR_at_most_1=k / n, wilson_lo=lo, wilson_hi=hi, n_draws=n)
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
 def pb_table():
     s = pd.read_csv(data('aesa/sensitivity.csv')).set_index('case')
     with open(data('aesa/results.json')) as f:
@@ -498,6 +539,7 @@ def main():
            'sensitivity/household_size.csv': HH_TABLE['t'],
            'sensitivity/pathway_carbon.csv': pathway_table(),
            'sensitivity/planetary_boundary.csv': pb_table(), 'loe_2028_2050.csv': loe_2028_2050(),
+           'sensitivity/tl_sensitivity.csv': tl_sensitivity(),
            'sensitivity/replacement_variants.csv': replacement_variants()}
     for rel, df in out.items():
         N.columns(df).to_csv(layout.writing(data(rel)), index=False)

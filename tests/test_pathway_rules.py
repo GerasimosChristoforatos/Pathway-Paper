@@ -252,26 +252,25 @@ def test_l10_class_factors():
     assert LV.l10_class_factor('ambitious', years) == {} and LV.l10_class_factor(0.5, years) == {}
 
 
-def test_tl1_v410_sensitivity_row():
-    """L1 at TL: the v4.10 setting (the national 1991 household size) is a sensitivity row, its summary matches
-    runs.csv, and the age-specific path is never below L1 Ambitious."""
+def test_tl1_by_age_sensitivity_row():
+    """L1 at TL by age is a sensitivity row: its summary matches runs.csv; the TL summary matches the TL run; the
+    by-age path is never below L1 Ambitious on the adoption window."""
     import pathways as PW
     with open(layout.data('pathways/theoretical_limit.json')) as f:
         a = json.load(f)['tl1']
     with open(layout.data('pathways/levers.json')) as f:
-        l1 = json.load(f)['L1']
+        lv = json.load(f)
+    l1, w = lv['L1'], lv['adoption']['w']
     runs = pd.read_csv(layout.data('pathways/runs.csv'))
     r = runs[(runs['scenario'] == 'REF')].set_index('run')
-    assert a['v410']['carbon_kt'] == pytest.approx(r.loc[PW.TL_L1_V410, 'carbon_kt'], rel=1e-12)
-    assert a['tl']['carbon_kt'] == pytest.approx(r.loc['TL', 'carbon_kt'], rel=1e-12)
-    assert 0.0 < a['households_per_person_fall_2050'] < 1.0 and 0.0 < a['v410_households_per_person_fall_2050'] < 1.0
-    with open(layout.data('pathways/levers.json')) as f:
-        w = json.load(f)['adoption']['w']
-    for y, v in l1['tl_speed']['path'].items():          # never below Ambitious on the adoption window
+    assert a['by_age']['carbon_kt'] == pytest.approx(r.loc[PW.TL_L1_BY_AGE, 'carbon_kt'], rel=1e-12)
+    assert a['level'] == l1['tl'] and a['level_year'] == 1991
+    assert 0.0 < a['households_per_person_fall_2050'] < 1.0
+    assert 0.0 < a['by_age']['households_per_person_fall_2050'] < a['households_per_person_fall_2050']
+    for y, v in l1['by_age']['path'].items():
         if int(y) >= 2026:
             assert v >= l1['S_ref'][y] + w[y] * l1['gap'][y] - 1e-12, y
-    assert l1['headship']['back_check']['best_observed_since_1991'] in (True, False)
-
+    assert l1['by_age']['headship']['back_check']['best_observed_since_1991'] in (True, False)
 
 
 def test_l10_production_multiplier():
@@ -320,3 +319,32 @@ def test_population_threshold_minimum_events():
         loe[np.argsort(pop)[:k]] = 0.9                  # the k smallest populations within AR
         r = PMC.population_threshold(pd.DataFrame(dict(P_NZ_2050=pop, TL_LoE_AR=loe)), 'TL_LoE_AR')
         assert r['estimable'] is False and r['within_AR'] == k and 'curve' not in r and 'not estimable' in r['note']
+
+
+def test_l10_tl_sensitivities():
+    """L10 TL sensitivities: (a) the cement factor on every class without a documented near-zero definition, steel
+    and the elevator keeping the steel factor; (b) the 2050 near-zero share 1.00. Their runs are in runs.csv and in
+    the TL sensitivity table, every other lever at TL, both below the central TL."""
+    years = np.arange(2025, 2051)
+    a = LV.l10_class_factor('tl', years, 'all_classes')
+    assert set(a) == set(LV.L10_CLASS_REVIEW)
+    s_ = LV.l10_near_zero_share(years)
+    for k, c in a.items():
+        kk = LV.L10_TL_CLASSES.get(k, LV.L10_K_CEMENT)
+        assert np.allclose(c, (1 - s_) + s_ * kk, rtol=0, atol=1e-15), k
+    b = LV.l10_class_factor('tl', years, 'share_100')
+    assert set(b) == set(LV.L10_TL_CLASSES) and b['CONCRETE'][-1] == pytest.approx(LV.L10_K_CEMENT, rel=1e-15)
+    assert set(LV.L10_INPUT_CLASSES) == set(LV.L10_CLASS_REVIEW)
+    t = pd.read_csv(layout.data('sensitivity/tl_sensitivity.csv')).set_index('run')
+    runs = pd.read_csv(layout.data('pathways/runs.csv'))
+    r = runs[runs['scenario'] == 'REF'].set_index('run')
+    for run in ('TL', 'TL-L10-all-classes', 'TL-L10-share-100', 'TL-L1-by-age'):
+        assert t.loc[run, 'carbon_kt'] == pytest.approx(r.loc[run, 'carbon_kt'], rel=1e-12)
+    assert t.loc['TL-L10-all-classes', 'carbon_kt'] < t.loc['TL-L10-share-100', 'carbon_kt'] < t.loc['TL', 'carbon_kt']
+    assert bool(t.loc['TL-L1-by-age', 'extended_data']) is False        # the by-age rule is Supplementary only
+
+
+def test_edt1_l10_footnote_milestones():
+    """The EDT1 L10 footnote quotes the adopted near-zero share milestones."""
+    ms = LV.L10_S_MILESTONES
+    assert f"{100 * ms[2030]:.0f} / {100 * ms[2035]:.0f} / {100 * ms[2050]:.0f}% in 2030 / 2035 / 2050" in LV.EDT1_FOOTNOTES[1]

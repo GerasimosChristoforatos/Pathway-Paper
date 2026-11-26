@@ -25,11 +25,12 @@ def _js(rel):
 
 
 def tl1_lines(ref, tl):
-    """L1 at TL from age-specific headship and the v4.10 sensitivity (household_headship.py; pathways.TL_L1_V410;
-    pathways_mc.TLV410), from levers.json, theoretical_limit.json, runs.csv and the pathway Monte Carlo summary."""
+    """L1 at TL: the caveat (households per person at every age) and the by-age sensitivity (household_headship.py;
+    pathways.TL_L1_BY_AGE; pathways_mc.TLAGE), from levers.json, theoretical_limit.json, runs.csv and the pathway
+    Monte Carlo summary."""
     a = _js('pathways/theoretical_limit.json')['tl1']
-    h = _js('pathways/levers.json')['L1']['headship']
-    r = ref.loc[PW.TL_L1_V410]
+    h = _js('pathways/levers.json')['L1']['by_age']['headship']
+    r = ref.loc[PW.TL_L1_BY_AGE]
     s = pd.read_csv(layout.data('pathways/montecarlo_summary.csv'))
     pr = lambda run: s[(s['run'] == run) & (s['quantity'] == 'LoE_AR')]['probability_LoE_at_most_1']
     cal, cb, bc = h['calibration'], h['common_basis'], h['back_check']
@@ -38,9 +39,17 @@ def tl1_lines(ref, tl):
     rates = h['rates']
     rate_txt = '; '.join(f"{g} " + ' / '.join(f"{rates[c][g]:.4f}" for c in ('2013', '2018', '2023'))
                          for g in ('15-39', '40-64', '65+'))
-    p_v = pr('TL_L1_national_1991')
+    p_v = pr('TL_L1_by_age')
+    bt = bc['table']
+    # households per person at given ages relative to the 2023 rates = implied S ratio / observed S ratio
+    earlier = {c: bt['implied_ratio'][c] / bt['observed_ratio'][c] for c in bt['observed_ratio']}
     return [
-        'L1 at TL (age-specific household formation): households per person (headship) by age group (0-14, 15-39, '
+        f"L1 at TL lies beyond any census at the age level: it requires {100 * a['households_per_person_fall_2050']:.1f}% "
+        'fewer households per person at every age than in 2023, more shared living than observed in any census since '
+        f"1991 (back-check, SI). (Observed households per person at given ages relative to the 2023 rates: "
+        + ', '.join(f"{c} {v:.3f}" for c, v in sorted(earlier.items()))
+        + '; headship by age fell in every adult group from 2013 to 2023.)',
+        'L1 at TL by age (sensitivity row, Supplementary): households per person (headship) by age group (0-14, 15-39, '
         '40-64, 65+) from the 2013, 2018 and 2023 Census living arrangements of people in households in occupied '
         'private dwellings (CEN23_FHH_036, role in family nucleus; children carry zero headship and stay a separate '
         'category, as in POPPR_FHH_008), with households per family unit f_c and per person in other living '
@@ -68,9 +77,10 @@ def tl1_lines(ref, tl):
            else f"the {bc['more_shared_year']} census shared more at given ages; the sensitivity row matches it. ")
         + 'The minima may come from different census years; census family coding changed in 2018 (new methodology) and '
         '2023 (administrative data added people to families).',
-        f"L1 at TL v4.10 (sensitivity row): the national 1991 household size ({a['v410']['level']:.4f}) regardless of "
-        f"age, the same speed limit: TL {r['carbon_kt']:,.1f} kt, LoE AR {r['LoE_AR']:.3f}, LoE AtP {r['LoE_AtP']:.2f}"
-        + (f"; P(LoE AR <= 1) = {100 * float(p_v.iloc[0]):.1f}% in the pathway Monte Carlo" if len(p_v) else '') + '.']
+        f"With L1 at TL by age ({100 * a['by_age']['households_per_person_fall_2050']:.1f}% fewer households per person "
+        f"than the 2023 rates in 2050; the speed limit and never below L1 Ambitious): TL {r['carbon_kt']:,.1f} kt, LoE "
+        f"AR {r['LoE_AR']:.3f}, LoE AtP {r['LoE_AtP']:.2f}"
+        + (f"; P(LoE AR <= 1) = {100 * float(p_v.iloc[0]):.2f}% in the pathway Monte Carlo" if len(p_v) else '') + '.']
 
 
 def lines():
@@ -176,13 +186,12 @@ def lines():
          'at L = 17 than at L = 0 (outputs/data/baseline/completion_lag_hindcast.csv).', '',
          '### Theoretical limit: constraints at Level 4', '',
          f"Level 4 follows one rule ({LV.TL_RULE}) and is reached along the common adoption window, except household "
-         f"size (L1 at TL): its age-specific path (S 2050 = {LV.by_year(lv['L1']['tl'], 2050):.4f}) is approached no "
+         f"size (L1 at TL): its level ({lv['L1']['tl']:.4f}, the {lv['L1']['tl_year']} census maximum) is approached no "
          f"faster than the fastest change of household size observed between consecutive censuses 1991-2023 "
          f"({lv['L1']['tl_speed']['rate']:.5f} per year, {lv['L1']['tl_speed']['interval'][0]}-"
          f"{lv['L1']['tl_speed']['interval'][1]}; census-benchmarked households): S_TL(t) = min(S_ref(2026) + r (t - "
-         f"2026), level(t)), never below the Ambitious path. The speed limit binds "
-         + (f"until {lv['L1']['tl_speed']['binds_until']}" if lv['L1']['tl_speed']['binds_until'] else 'in no year')
-         + ". Household size is a population-level outcome of age "
+         f"2026), level), never below the Ambitious path. The level is reached in "
+         f"{lv['L1']['tl_speed']['level_reached']:.1f}. Household size is a population-level outcome of age "
          'structure, partnering and housing costs; the speed limit keeps the theoretical limit within changes the New '
          'Zealand census record has shown. The instant-TL row keeps its definition (every level from 2027). In every '
          "theoretical-limit-family run the Reference's overbuild surplus (the positive market excess of the pipeline "

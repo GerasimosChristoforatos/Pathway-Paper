@@ -74,6 +74,9 @@ FILES = [
     ('data/sensitivity/household_size.csv', 'The Reference, the Moderate / Ambitious Pathway and TL '
      'under the household-size sensitivities (Stats NZ Low / High variant; 2018-2023 census pace)',
      'tools/sensitivity_tables.py'),
+    ('data/sensitivity/tl_sensitivity.csv', 'The Theoretical Limit sensitivities (every other lever at TL): '
+     'deterministic and P(LoE AR <= 1) over the pathway Monte Carlo (Supplementary Table 13; the L10 rows in ED8 b)',
+     'tools/sensitivity_tables.py'),
     ('data/loe_2028_2050.csv', 'Cumulative LoE of AR and AtP over 2028-2050 (carbon and budget both summed over the '
      'window; the pipeline years excluded) of the Reference, the Pathways and TL (Supplementary Table 10)',
      'tools/sensitivity_tables.py'),

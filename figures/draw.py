@@ -84,14 +84,6 @@ def pipeline_breaks():
     return [float(max(D.js('baseline/overbuild_2026.json')['pipeline_years']))]
 
 
-def absorption_window():
-    """(first, last) year in which the starting surplus and the 2026-27 overbuild are absorbed along the logistic: the
-    year after the last observed pipeline year to the absorption end (baseline/overbuild_2026.json)."""
-    from figures import data as D
-    ob = D.js('baseline/overbuild_2026.json')
-    return int(max(ob['pipeline_years'])) + 1, int(ob['absorption_end'])
-
-
 HISTORY_END = 2025.0               # last history year: annual lines are not interpolated across it
 
 

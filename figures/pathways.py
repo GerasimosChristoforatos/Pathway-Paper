@@ -83,16 +83,16 @@ def sf14_tl_dwellings():
 
 def sf16_headship():
     """SF16: households per person (headship) by adult age group at the 2013, 2018 and 2023 Censuses (points) and the
-    L1 at TL rate by projection year (line: the lowest census rate of the group, or propensity B where lower), from
+    by-age L1 at TL rate (sensitivity) by projection year (line: the lowest census rate of the group, or propensity B where lower), from
     pathways/levers.json (household_headship.py)."""
-    h = D.js('pathways/levers.json')['L1']['headship']
+    h = D.js('pathways/levers.json')['L1']['by_age']['headship']
     groups = ('15-39', '40-64', '65+')
     fig, ax = plt.subplots(1, 3, figsize=S.figsize('double', 62), sharey=False)
     for a, g in zip(ax, groups):
         cy = [int(c) for c in h['rates']]
         a.plot(cy, [h['rates'][str(c)][g] for c in cy], 'o', color=S.INK, ms=3.5, label='Census')
         ty = sorted(int(y) for y in h['tl_rates'])
-        a.plot(ty, [h['tl_rates'][str(y)][g] for y in ty], color=S.TL, lw=S.LW, label='L1 at TL rate')
+        a.plot(ty, [h['tl_rates'][str(y)][g] for y in ty], color=S.TL, lw=S.LW, label='By-age TL rate (sensitivity)')
         a.plot(ty, [h['b_adjusted'][str(y)][g] for y in ty], color=S.PATHWAY_SETTING['ambitious'], lw=S.LW_THIN,
                ls='--', label='Propensity B (census basis)')
         a.set_xlim(2011, 2050)

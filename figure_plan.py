@@ -109,7 +109,9 @@ PAPER_EXTENDED = [
          caption='Population (a), households (b) and cumulative floor area built (c): history (black) and the Reference '
                  'projection (dark red line). The shaded band is the range of the Stats NZ population projection '
                  'between its 5th and 95th percentile paths run through the model; it is not a Monte Carlo interval. '
-                 'Households after the 2023 Census are population divided by the household-size path.',
+                 'Households after the 2023 Census are population divided by the household-size path. The household '
+                 'history is rebased on the 2023 Census (occupied and residents-away private dwellings): the Stats NZ '
+                 'household increments after 2018 are scaled by one factor so that June 2023 matches the census.',
          source=['figure_source/projection_paths.json', 'figure_source/D02_households.json']),
     dict(id='ED2', file='ED2_household_formation_size', module='figures.paper_extended',
          title='Household formation and household size',
@@ -138,7 +140,9 @@ PAPER_EXTENDED = [
                  'by component: census intervals as interval means (columns), the pipeline years 2026-2027 as annual '
                  'columns and the projection as stacked areas; positive components are stacked up and negative ones '
                  'down from zero, and the line is the dwellings built in scope. The row at the top gives the market '
-                 'balance of each census interval (thousand dwellings per year).',
+                 'balance of each census interval (thousand dwellings per year). 1986-1991 is not covered (the '
+                 'calibration starts in 1991). In the last column (after the 2023 Census) households are population divided by '
+                 'the household size of the model, not census-benchmarked.',
          source=['figure_source/D05_stock_and_vacancy.json', 'baseline/scenarios.json', 'baseline/projection.json']),
     dict(id='ED5', file='ED5_replacement_variants', module='figures.paper_extended',
          title='Net replacement: census-interval rates and the Low, High and Very High variants',
@@ -167,19 +171,25 @@ PAPER_EXTENDED = [
                  'same convention). Each input is shown at its low (pale blue) and high (dark blue) end, a single '
                  'alternative case in grey; the ranges are not additive. Not shown (kept in the data file): α = 1 '
                  '(Hjalsted et al. SI tables) and the raw Stats NZ 2024-base median population. What each row changes '
-                 'compared with the Reference (numbered as the row labels): ',
+                 'compared with the Reference: ',
          row_notes='ED7',
          source=['sensitivity/planetary_boundary.csv', 'aesa/results.json', 'loe_2028_2050.csv']),
     dict(id='ED8', file='ED8_one_at_a_time', module='figures.sensitivity',
-         title='One at a time: cumulative embodied carbon 2026-2050 of the Reference',
-         caption='One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; each '
-                 'input at its low (pale blue) and high (dark blue) end, a single alternative case grey, intermediate '
-                 'cases as ticks; the ranges are not additive and are not a joint interval. Not shown (kept in the data '
-                 'file): the overbuild gap against the same-year requirement, no census under-construction correction, '
-                 'the maintenance event timing L / n, and the rows that compare with superseded settings. What each row '
-                 'changes compared with the Reference (numbered as the row labels): ',
+         title='One at a time: cumulative embodied carbon 2026-2050 of the Reference and of the Theoretical Limit',
+         caption='(a) One-at-a-time ranges of the Reference cumulative embodied carbon 2026-2050, grouped by category; '
+                 'each input at its low (pale blue) and high (dark blue) end, a single alternative case grey, '
+                 'intermediate cases as ticks; the ranges are not additive and are not a joint interval. Not shown '
+                 '(kept in the data file): the overbuild gap against the same-year requirement, no census '
+                 'under-construction correction, the maintenance event timing L / n, and the rows that compare with '
+                 'superseded settings. (b) The Theoretical Limit under two L10 sensitivities, every other lever at TL, '
+                 'against the central Theoretical Limit (vertical line): the near-zero factor of cement (125/850) on '
+                 'every material class without a documented near-zero definition, steel keeping its own (an upper '
+                 'bound on L10, not a documented scenario: no documented near-zero definition exists outside steel and '
+                 'cement), and the near-zero share of cement and steel production 100% by 2050 instead of 93%; values '
+                 'and P(cumulative LoE of AR ≤ 1) over the Monte Carlo draws in Supplementary Table 13. What each row '
+                 'of (a) changes compared with the Reference: ',
          row_notes='ED8',
-         source=['sensitivity/reference_carbon.csv']),
+         source=['sensitivity/reference_carbon.csv', 'sensitivity/tl_sensitivity.csv']),
     dict(id='ED9', file='ED9_sobol', module='figures.montecarlo',
          title='Sobol indices of the Reference: embodied carbon and floor area 2026-2050',
          caption='First-order and total-effect Sobol indices of the Reference cumulative embodied carbon and floor area '
@@ -333,6 +343,8 @@ SI_TABLES = [
      'outputs/data/pathways/runs.csv and outputs/data/loe_2028_2050.csv'),
     ('ST11', 'Monte Carlo inputs', None, 'SI text table'),
     ('ST12', 'limitations register', None, 'SI text table'),
+    ('ST13', 'Theoretical Limit sensitivities (deterministic and Monte Carlo)', None,
+     'outputs/data/sensitivity/tl_sensitivity.csv'),
 ]
 
 

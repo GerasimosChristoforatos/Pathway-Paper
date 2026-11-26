@@ -58,8 +58,8 @@ def ed1():
     """3 x 1: population, households and cumulative floor area: history (black),
     the Reference projection (median, dark red) and the band of the Stats NZ population 5th-95th percentile paths (the
     data of figure_source/projection_paths.json; not a Monte Carlo band: the population percentiles are those of the
-    Stats NZ projection run through the model). The households panel notes the rebasing of the Stats NZ dwelling and
-    household estimates on the 2023 census."""
+    Stats NZ projection run through the model). The rebasing of the Stats NZ dwelling and household estimates on the
+    2023 census is legend text (no note on the figure)."""
     d = D.src('projection_paths')
     hh = D.src('D02_households')
     f = d['df_forecast']
@@ -79,15 +79,13 @@ def ed1():
         P.split(a)
         a.set_ylabel(lab, fontsize=S.FONT_SMALL)
         P.panel(a, letter, title)
-    ax[1].text(0.01, 0.97, f"History rebased on the {hh['S_ANCHOR_YEAR']} census (occupied + residents-away private "
-               f"dwellings): Stats NZ household increments after 2018 × {hh['hh_rebase_k']:.3f}",
-               transform=ax[1].transAxes, ha='left', va='top', fontsize=S.FONT_MIN, color=S.MUTED)
     ax[0].legend(fontsize=S.FONT_MIN, loc='lower right')
     ax[-1].set_xlabel('Year')
     fig.tight_layout()
     _save(fig, 'ED1_population_households_floor_area',
           note=f"Band: the Stats NZ population 5th-95th percentile paths run through the model (not the Monte Carlo). "
-               f"Households rebased on the {hh['S_ANCHOR_YEAR']} census (k = {hh['hh_rebase_k']:.4f}).")
+               f"Households rebased on the {hh['S_ANCHOR_YEAR']} census (occupied + residents-away private dwellings): "
+               f"the Stats NZ household increments after 2018 x {hh['hh_rebase_k']:.4f}.")
 
 
 def ed3():
@@ -143,20 +141,13 @@ def ed3():
     ax[1].legend(fontsize=S.FONT_MIN)
     P.panel(ax[1], 'b', 'Household size')
     fig.tight_layout()
-    sp = l1['tl_speed']
-    bind = (f"at the rate limit from the Reference in {int(stl.index[0])} until {sp['binds_until']}, then on"
-            if sp['binds_until'] else 'on')
+    reach = int(stl.index[np.argmax(stl.values >= l1['tl'] - 1e-9)])
     _save(fig, 'ED2_household_formation_size',
           note=f"(b) Stats NZ Medium B (living-arrangement propensities change), rebased on 2023, is the L1 Ambitious "
                f"path and Extended Data Fig. 8 row 1 ({sb.index[0]}-{sb.index[-1]}, {sb.iloc[-1]:.2f} in 2050; the "
-               f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising "
-               f"{bind} the age-specific path (the lowest observed census headship of each age group, or propensity B "
-               f"where lower, on the projected age structure; {LV_by_year(l1['tl'], 2050):.2f} in 2050).")
-
-
-def LV_by_year(d, y):
-    """A by-year dict of levers.json at year y."""
-    return float(d[str(y)])
+               f"pathways phase it in by 2035); {N.TL['TL']} (L1 at TL) is the household size of the TL run, rising at the "
+               f"rate limit from the Reference in {int(stl.index[0])} to {l1['tl']:.2f} (the {l1['tl_year']} level) "
+               f"at mid-{reach - 1} (the Methods' {reach - 1}.5), held from {reach}.")
 
 
 def sf2():
@@ -204,17 +195,17 @@ def sf2():
         P.panel(ax[1], 'b', 'TL LoE against population')
     ax[1].set_xlabel('New Zealand population 2050 (million), Monte Carlo draws')
     fig.tight_layout()
-    # the v4.10 L1 at TL sensitivity (pathways.TL_L1_V410; pathways_mc.TLV410)
+    # the by-age L1 at TL sensitivity (pathways.TL_L1_BY_AGE; pathways_mc.TLAGE)
     a = D.js('pathways/theoretical_limit.json')['tl1']
     s = D.csv('pathways/montecarlo_summary.csv')
-    m = s[(s['run'] == 'TL_L1_national_1991') & (s['quantity'] == 'LoE_AR')]
-    v = a['v410']
-    age_note = (f" L1 at TL combines the lowest observed census headship of each age group (or propensity B where "
-                f"lower): {100 * a['households_per_person_fall_2050']:.1f}% fewer households per person than the 2023 "
-                f"rates in 2050. With the v4.10 setting (the national {v['level_year']} household size {v['level']:.2f} "
-                f"regardless of age, {100 * a['v410_households_per_person_fall_2050']:.1f}% fewer households per person "
-                f"at every age) TL is {v['carbon_kt']:,.0f} kt, LoE AR {v['LoE_AR']:.2f}"
-                + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.1f}% over the draws"
+    m = s[(s['run'] == 'TL_L1_by_age') & (s['quantity'] == 'LoE_AR')]
+    v = a['by_age']
+    age_note = (f" L1 at TL, the national {a['level_year']} household size {a['level']:.2f}, implies "
+                f"{100 * a['households_per_person_fall_2050']:.1f}% fewer households per person at every age than the "
+                f"2023 census rates in 2050. With L1 at TL from the lowest observed census headship of each age group "
+                f"(or propensity B where lower; {100 * v['households_per_person_fall_2050']:.1f}% fewer) TL is "
+                f"{v['carbon_kt']:,.0f} kt, LoE AR {v['LoE_AR']:.2f}"
+                + (f", P(LoE AR \u2264 1) = {100 * float(m['probability_LoE_at_most_1'].iloc[0]):.2f}% over the draws"
                    if len(m) else '') + ' (sensitivity row).')
     _save(fig, 'SF13_conditional_tl', note=f"P(within AR) = {j['p_within_AR']:.3f} (Wilson {j['wilson_95'][0]:.3f}-"
                                           f"{j['wilson_95'][1]:.3f}); (b) {note_b}.{age_note}")

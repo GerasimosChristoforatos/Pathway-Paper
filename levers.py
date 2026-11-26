@@ -17,10 +17,10 @@ AMBITION LEVELS (the 2050 Pathways Calculator, DECC 2010 and DESNZ 2023; EUCalc 
                  B  an NZ record with no structural trend exists -> the best value ever observed in NZ;
                  C  otherwise -> a published reference value (official projection > legislated target >
                     peer-reviewed scenario > peer-country value)
-  TL         = Level 4   the Theoretical Limit (TL_RULE): the best value observed, internationally where a comparable
-                         measure exists, otherwise in New Zealand, or a documented scenario bound; a logical bound
-                         only where physically attainable by choice or design; every lever at TL is asserted at
-                         least as strong as Ambitious (tl_strength)
+  TL         = Level 4   the Theoretical Limit (TL_RULE): the most extreme value physically attainable while the
+                         housing system keeps functioning (a bound the system defines where one exists, otherwise
+                         the best value observed or the most stringent documented scenario); every lever at TL is
+                         asserted at least as strong as Ambitious (tl_strength)
 Levels between Reference and Ambitious are indexed by lambda in [0, 1] (the native parameter
 x(lambda) = x_ref + lambda (x_amb - x_ref)); Moderate is lambda = 0.5 exactly (the lambda-sweep of the Extended Data).
 
@@ -152,7 +152,7 @@ L1_PROPENSITY_SOURCE = ('Stats NZ, National family and household projections: 20
 # TL row (TL_FROM2027) keeps its definition (the level from 2027).
 TL1_SPEED_CENSUS_WINDOW = (1991, 2023)
 TL1_SPEED_START = OBSERVED_YEAR
-L1_TL_VARIANT = 'Medium'          # the population variant of the deterministic L1 at TL ratio path
+L1_TL_VARIANT = 'Medium'          # the population variant of the deterministic by-age (sensitivity) ratio path
 L2_VACANCY_FLOOR = 0.040          # implied vacancy must never fall below this in a non-TL run (check)
 L3_D_AMBITIOUS = 0.40             # Pellan et al. 2024: demolition 150,000 -> 90,000 a year
 # Extended Data Table 1 footnotes (EDT1 and LEVERS_TABLE.md). L3: d applies to the demolition rate and to the surge
@@ -163,12 +163,15 @@ EDT1_FOOTNOTES = (
     'L3: 40% fewer demolitions, including the recent redevelopment surge (France, 150,000 to 90,000 demolitions a '
     'year; Pellan et al. 2024). The surge is the part of net replacement above the long-run rate, i.e. '
     'demolition-and-rebuild.',
-    'L10: the nine background scenarios of Horup et al. (2025, Table S1; integrated assessment model REMIND, Sacchi et '
-    'al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the world develops (SSP1 sustainable, SSP2 middle of '
-    'the road, SSP5 fossil-fuelled growth); RCPs (Representative Concentration Pathways) describe climate policy, named '
-    'by the radiative forcing reached in 2100 in W m⁻² (RCP2.6 ≈ 2 °C, RCP1.9 ≈ 1.5 °C of warming); \'no climate '
-    'policy\' is the baseline. Three SSPs × three climate settings = nine futures for how electricity and industry '
-    'decarbonise, which set how much cleaner each material becomes.')
+    'L10: the nine background scenarios of Horup et al. (2025, Table S1, "Scenarios represented in the background '
+    'system (using IAM model: REMIND)"; Sacchi et al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the '
+    'world develops (SSP1 sustainable, SSP2 middle of the road, SSP5 fossil-fuelled growth); RCPs (Representative '
+    'Concentration Pathways) describe climate policy, named by the radiative forcing reached in 2100 in W m⁻². Table '
+    'S1 gives the "GMST increase by 2100": about 1.6-1.8 °C for RCP2.6 and 1.0-1.4 °C for RCP1.9 (the Paris Agreement '
+    'objective), and 2.3-4.5 °C with no climate policy. Three SSPs × three climate settings = nine futures for how '
+    'electricity and industry decarbonise, which set how much cleaner each material becomes. At TL, near-zero '
+    'emission cement and steel are added along the IEA cement near-zero share path (' + '8 / 27 / 93% in 2030 / 2035 '
+    '/ 2050); steel follows the cement path as an assumption.')
 L8_SAMPLE_TYPOLOGIES = ('Detached', 'Townhouses')
 L8_MIN_CASES = 10
 L9_REF_RATE = 0.01
@@ -190,21 +193,24 @@ L9_SITE_ENERGY_CUT_AMBITIOUS = 0.85
 L9_CUT = {'ambitious': {'transport': 0.0, 'site_energy': L9_SITE_ENERGY_CUT_AMBITIOUS, 'waste': 0.0},
           'tl': {'transport': 1.0, 'site_energy': 1.0, 'waste': 0.0}}
 # One rule for the Theoretical Limit, written once here, in METHODS_DRAFT and the Extended Data Table 1
-TL_RULE = ('Theoretical Limit = the best value observed, internationally where a comparable measure exists, otherwise '
-           'in New Zealand, or a documented scenario bound; a logical bound only where physically attainable by choice '
-           'or design.')
+TL_RULE = ('Theoretical Limit = the most extreme value of each lever physically attainable while the housing system '
+           'keeps functioning: a bound the system itself defines where one exists (L3 no demolition; L4 no space '
+           'beyond the occupied area; L7 the lowest soil order; L9 zero site energy and transport), otherwise the best '
+           'value observed (L1, L2, L5, L6, L8) or the most stringent documented scenario (L10); behavioural change is '
+           'limited to the fastest observed rate (the L1 speed limit).')
 # L2 at TL: OECD (2024) Affordable Housing Database HM1.1, Figure HM1.1.2 panel B, Switzerland 2022
 FILE_OECD_VACANCY = 'data/derived/oecd_hm112_vacancy.csv'
 L2_TL_COUNTRY = 'Switzerland'
 L2_TL_NOTE = ('At the Theoretical Limit every non-market empty dwelling (holiday homes, dwellings held empty) is '
-              'occupied, a choice, and only frictional market vacancy remains, at the lowest nationwide rate in the OECD '
-              'cross-country table: Switzerland 1.31% (2022): 61,496 empty dwellings on 1 June 2022, a share of the '
-              'total dwelling stock including single-family homes (Swiss Federal Statistical Office, empty dwellings '
-              'survey; admin.ch media release https://www.admin.ch/gov/en/start/documentation/media-releases.msg-id-'
-              '90300.html). Sweden (0.25%, 2021) is excluded: its '
-              'national count (6,794 vacant units in a 4.6 M stock; OECD \'Vacant\' sheet) cannot be an all-tenure '
-              'market count. One vintage (OECD 2024 table) is used for all countries; national releases after it are '
-              'not.')
+              'occupied, a choice, and only frictional market vacancy remains. Its proxy is the lowest nationwide '
+              'all-tenure rate in the OECD cross-country table: Switzerland 1.31% (2022): 61,496 empty dwellings on 1 '
+              'June 2022, a share of the total dwelling stock including single-family homes (Swiss Federal Statistical '
+              'Office, empty dwellings survey; admin.ch media release https://www.admin.ch/gov/en/start/documentation/'
+              'media-releases.msg-id-90300.html). Sweden (OECD 0.25%, 2021) is excluded: Statistics Sweden counts only '
+              'rental flats in multi-dwelling buildings vacant for immediate letting (excluding owner-occupied and '
+              'tenant-owned dwellings, houses and units under repair), divided by the whole stock, so it is not an '
+              'all-tenure measure; Statistics Sweden itself gives 0.8% of rental dwellings in 2021 and 1.3% in 2024. '
+              'One vintage (OECD 2024 table) is used for all countries; national releases after it are not.')
 # L6 at TL: DCLG (2010) Land use change statistics England, provisional estimates for 2009: "80% of
 # dwellings (including conversions) were built on previously developed land, unchanged from 2008" (England's peak)
 L6_S_TL = 0.80
@@ -427,7 +433,8 @@ def l10_multiplier(years, stat='min', path=None):
 # Item-level production chain: for every case-study item i, A13_i(y) = A13_i,2025 x p_i(y) x q_i(y),
 # p_i the Horup S4 path of the item (unmapped items held), q_i the L10 multiplier at the run's level:
 # q_i = m_a(y) x c_k(y), m_a the archetype multiplier (uniform over a case's items: Horup et al. report the envelope by
-# archetype only) and c_k a factor of the item's class k (1 unless the class is in L10_TL_CLASSES and L10 is at TL).
+# archetype only) and c_k a factor of the item's class k (1 unless the class is in L10_TL_CLASSES, or in the classes of
+# an L10_TL_VARIANTS sensitivity, and L10 is at TL).
 # Items aggregate to case studies (per m2) and typologies by the same pooling (Building_factors.pool). Pooling is
 # linear and m_a is uniform within a typology, so the typology A1-A3 is exactly m_a(y) x C_t(y) x the decarbonised
 # path, C_t(y) = 1 - sum_k P_tk(y) (1 - c_k(y)) / P_t(y) with P_tk the pooled class paths
@@ -466,22 +473,50 @@ L10_CLASS_REVIEW = {
     'BRICKS': 'neither (clay brick)', 'TIMBER': 'neither', 'PLASTICS': 'neither', 'ALUMINIUM': 'neither (aluminium)',
     'PLASTERBOARD': 'neither (gypsum)', 'SIP': 'neither (timber-foam panel)', 'GLASS': 'neither',
     'GLASS WOOL': 'neither', 'PAINT': 'neither'}
+# Theoretical Limit sensitivities of L10 (every other lever at TL): (a) the cement near-zero factor on every other
+# A1-A3 class, steel keeping its own (no documented near-zero definition exists outside steel and cement: an upper
+# bound on L10, not a documented scenario); (b) the near-zero share 100% by 2050 (2050 milestone 1.00, not 0.93)
+L10_TL_VARIANTS = {
+    'all_classes': dict(label='L10: near-zero factor on all material classes',
+                        classes={k: L10_TL_CLASSES.get(k, L10_K_CEMENT) for k in L10_CLASS_REVIEW},
+                        milestones=dict(L10_S_MILESTONES),
+                        basis='the cement near-zero factor k = 125/850 on every A1-A3 class without a documented '
+                              'near-zero definition (steel and the steel-dominated elevator keep the steel factor '
+                              '400/2,945), along the same share path; no documented near-zero definition exists '
+                              'outside steel and cement, so this is an upper bound on L10, not a documented scenario'),
+    'share_100': dict(label='L10: near-zero share 100% by 2050',
+                      classes=dict(L10_TL_CLASSES), milestones={**L10_S_MILESTONES, 2050: 1.0},
+                      basis='the near-zero share path with the 2050 milestone 1.00 instead of 0.93')}
+# every class that any L10 at TL setting can touch (the class inputs of the contexts)
+L10_INPUT_CLASSES = tuple(sorted(set(L10_TL_CLASSES).union(*(v['classes'] for v in L10_TL_VARIANTS.values()))))
 
 
-def l10_near_zero_share(years):
-    """s(y): the near-zero share of cement and steel production, linear between L10_S_MILESTONES, 0 through 2026."""
+def l10_near_zero_share(years, milestones=None):
+    """s(y): the near-zero share of cement and steel production, linear between the milestones (L10_S_MILESTONES
+    unless given), 0 through 2026."""
+    ms = L10_S_MILESTONES if milestones is None else milestones
     y = np.asarray(years, float)
-    k = sorted(L10_S_MILESTONES)
-    s = np.interp(y, k, [L10_S_MILESTONES[x] for x in k])
+    k = sorted(ms)
+    s = np.interp(y, k, [ms[x] for x in k])
     return np.where(y <= OBSERVED_YEAR, 0.0, s)
 
 
-def l10_class_factor(level, years):
-    """{item class: c_k(y)} at an L10 level: c_k = (1 - s(y)) + s(y) k at TL for L10_TL_CLASSES, none otherwise."""
-    if level != 'tl' or not L10_TL_CLASSES:
+def l10_class_factor(level, years, variant=None):
+    """{item class: c_k(y)} at an L10 level: c_k = (1 - s(y)) + s(y) k at TL for L10_TL_CLASSES (or the classes and
+    share path of an L10_TL_VARIANTS sensitivity), none otherwise."""
+    classes, ms = ((L10_TL_CLASSES, None) if variant is None else
+                   (L10_TL_VARIANTS[variant]['classes'], L10_TL_VARIANTS[variant]['milestones']))
+    if level != 'tl' or not classes:
         return {}
-    s = l10_near_zero_share(years)
-    return {k: (1.0 - s) + s * kk for k, kk in L10_TL_CLASSES.items()}
+    s = l10_near_zero_share(years, ms)
+    return {k: (1.0 - s) + s * kk for k, kk in classes.items()}
+
+
+def l10_variant_params(p, variant):
+    """The lever parameters of an L10 at TL sensitivity: the L10 class factors and share path of the variant, and L8
+    on that variant's case paths (levers.json L8 at_l10_tl_variants); every other lever as resolved."""
+    return dict(p, L10=dict(p['L10'], tl_variant=variant),
+                L8=dict(p['L8'], at_l10_tl=p['L8']['at_l10_tl_variants'][variant]))
 
 
 def l10_chain(base, m_eff, cls_eff, typ):
@@ -641,23 +676,20 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
         raise SystemExit(f'STOP (L1): the propensity-B household size is below the A path in {bad}.')
     gap = np.maximum(gap, 0.0)                # exact zeros where the two rebased paths coincide (2023-2025)
     hS = B['hist_S'].dropna()
+    S_tl = float(hS.max())
     S_amb = S + gap
-    # L1 at TL: the lowest observed census headship of each age group, or propensity B where lower, on the projected
-    # age structure (household_headship.py), as a ratio to the 2023 census rates; the speed limit applies below
+    # the age-specific sensitivity (household_headship.py): the lowest observed census headship of each age group, or
+    # propensity B where lower, on the projected age structure, as a ratio to the 2023 census rates
     import household_headship as HH
-    tl_ratio = HH.tl_ratio_path(years, L1_TL_VARIANT)
-    S_tl = S * tl_ratio
-    S_v410 = float(hS.max())                  # the v4.10 setting (sensitivity): the national 1991 household size
+    age_ratio = HH.tl_ratio_path(years, L1_TL_VARIANT)
+    S_age = S * age_ratio
     out['L1'] = dict(subrule='C', variants={v: yy(S_variants[v]['S']) for v in S_variants}, gap=yy(gap),
                      tail=settings.S_TAIL, S_ref=yy(S),
                      S={'reference': yy(S), 'moderate': yy(S + gap / 2.0), 'ambitious': yy(S_amb)},
-                     tl=yy(S_tl), tl_ratio=yy(tl_ratio), tl_variant=L1_TL_VARIANT,
-                     tl_v410=S_v410, tl_v410_year=int(hS.idxmax()),
-                     b_ge_a_every_year=True, source=L1_PROPENSITY_SOURCE,
-                     # the fall in households per person at every age against the 2023 census rates, 2050
-                     tl_households_per_person_fall=float(1.0 - 1.0 / tl_ratio[-1]),
-                     tl_v410_households_per_person_fall=float(1.0 - S[-1] / S_v410),
-                     headship=headship_evidence(HH, hS),
+                     tl=S_tl, tl_year=int(hS.idxmax()), b_ge_a_every_year=True, source=L1_PROPENSITY_SOURCE,
+                     # TL1 held regardless of age structure: the fall in households per person at every age, against
+                     # the 2023 living-arrangement rates on the 2050 population (= the Reference S 2050, propensity A)
+                     tl_households_per_person_fall=float(1.0 - S[-1] / S_tl),
                      anchor=f'Stats NZ Medium B household size, rebased on 2023 (2050: S = {S_amb[-1]:.4f}, '
                             f'+{gap[-1]:.4f} on the Reference)')
     # TL1 speed limit: the fastest |dS| per year between consecutive censuses (census-benchmarked households)
@@ -667,18 +699,21 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
                       rate=abs(float(hS.loc[b] - hS.loc[a])) / (b - a)) for a, b in zip(cy[:-1], cy[1:])]
     fastest = max(intervals, key=lambda r: r['rate'])
     i0 = int(np.where(years == TL1_SPEED_START)[0][0])
-    path = tl1_path(S, gap, w, years, S_tl, fastest['rate'])
-    fast = float(S[i0]) + fastest['rate'] * (years - TL1_SPEED_START)
-    binds = [int(y) for y, f_, l_, p_ in zip(years, fast, S_tl, path)
-             if y >= TL1_SPEED_START and f_ < l_ - 1e-12 and abs(p_ - f_) < 1e-12]
-    v410_reached = TL1_SPEED_START + (S_v410 - float(S[i0])) / fastest['rate']
+    reached = TL1_SPEED_START + (S_tl - float(S[i0])) / fastest['rate']
     out['L1']['tl_speed'] = dict(rate=fastest['rate'], interval=[fastest['y0'], fastest['y1']], start=TL1_SPEED_START,
-                                 S_start=float(S[i0]), binding_years=binds,
-                                 binds_until=(max(binds) if binds else None),
-                                 v410_level_reached=float(v410_reached),
-                                 census_years=cy, intervals=intervals, path=yy(path),
-                                 v410_path=yy(tl1_path(S, gap, w, years, S_v410, fastest['rate'])),
+                                 S_start=float(S[i0]), level=S_tl, level_reached=float(reached),
+                                 census_years=cy, intervals=intervals,
+                                 path=yy(tl1_path(S, gap, w, years, S_tl, fastest['rate'])),
                                  basis='fastest change of household size between consecutive censuses 1991-2023')
+    age_path = tl1_path(S, gap, w, years, S_age, fastest['rate'])
+    fast = float(S[i0]) + fastest['rate'] * (years - TL1_SPEED_START)
+    age_binds = [int(y) for y, f_, l_, p_ in zip(years, fast, S_age, age_path)
+                 if y >= TL1_SPEED_START and f_ < l_ - 1e-12 and abs(p_ - f_) < 1e-12]
+    age_floor = [int(y) for y, l_, p_ in zip(years, S_age, age_path) if y >= TL1_SPEED_START and p_ > l_ + 1e-12]
+    out['L1']['by_age'] = dict(level=yy(S_age), ratio=yy(age_ratio), variant=L1_TL_VARIANT, path=yy(age_path),
+                               speed_limit_years=age_binds, ambitious_floor_years=age_floor,
+                               households_per_person_fall=float(1.0 - 1.0 / age_ratio[-1]),
+                               headship=headship_evidence(HH, hS))
 
     # ---- L2 Vacancy [B] ----
     v0 = float(B['v_forward'])
@@ -774,8 +809,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
     # sample (Detached and Townhouses share the single-family archetype) and cancels exactly in the ratios, so the
     # ratios differ only where the L10 class factors act (L10 at TL): x_i(y) = [path_i(y) - sum_k P_ik(y) (1 - c_k(y))]
     # / the same pooled
-    cf = l10_class_factor('tl', years)
-    if cf:
+    def l8_on_l10(cf):
         import Building_factors as BF
         cp = pd.read_csv(BF.OUT_A13_CLASS_BLD)
         variant = BF.decarb_variant(settings.DECARB_MODE, settings.DECARB_ITEM_CASE)
@@ -796,11 +830,18 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
             ind = factors_building[(factors_building['Typology'] == t) & (factors_building['duplicate_of'].fillna('') == '')]
             own = np.array([float(by_t_all[int(y)][by_t_all[int(y)]['typology'] == t]['ratio'].min()) for y in years])
             tl_t[t] = np.minimum(own, r_tl) if len(ind) >= 2 else r_tl.copy()
-        out['L8']['at_l10_tl'] = dict(
+        return dict(
             r={'reference': yy(np.ones(len(years))), 'moderate': yy((1.0 + r_tl) / 2.0), 'ambitious': yy(r_tl)},
             tl={t: yy(v) for t, v in tl_t.items()},
             r_report={int(y): float(r_tl[list(years).index(y)]) for y in L8_REPORT_YEARS},
             basis='the case paths with the L10 class factors at TL (near-zero cement and steel)')
+
+    cf = l10_class_factor('tl', years)
+    if cf:
+        out['L8']['at_l10_tl'] = l8_on_l10(cf)
+        out['L8']['at_l10_tl_variants'] = {v: dict(l8_on_l10(l10_class_factor('tl', years, v)),
+                                                   basis='the case paths with the L10 class factors of the sensitivity '
+                                                         + v) for v in L10_TL_VARIANTS}
 
     # ---- L9 Construction-stage carbon [C] ----
     a45 = {t: float(B['MAT_STAGE']['A4-A5'][t].sum()) for t in typ}
@@ -888,6 +929,7 @@ def resolve(B, factors_building, chars, factors_typology, settings, S_variants, 
 def tl_strength(p, years):
     """Every TLn against the Ambitious level of Ln (at least as strong in every typology and year)."""
     yrs = [int(y) for y in years]
+    amb3 = np.array([by_year(p['L1']['S']['ambitious'], y) for y in yrs])
     soil = p['L7']['soil_factor_2025']
     return [
         dict(item='TL4', tl='f = 1', ambitious=str({t: round(v, 4) for t, v in p['L4']['f']['ambitious'].items()}),
@@ -895,12 +937,8 @@ def tl_strength(p, years):
         dict(item='TL5', tl=str({t: round(v, 4) for t, v in p['L5']['tl'].items()}),
              ambitious=f"r = {p['L5']['r']['ambitious']:.4f}",
              ok=all(v <= p['L5']['r']['ambitious'] for v in p['L5']['tl'].values())),
-        dict(item='TL1', tl=f"S 2050 = {by_year(p['L1']['tl_speed']['path'], 2050):.4f} (age-specific headship)",
-             ambitious=f"S 2050 = {by_year(p['L1']['S']['ambitious'], 2050):.4f}",
-             # against Ambitious on the adoption window, S_ref + w gap (the bound tl1_path applies)
-             ok=all(by_year(p['L1']['tl_speed']['path'], y) >= by_year(p['L1']['S_ref'], y)
-                    + by_year(p['adoption']['w'], y) * by_year(p['L1']['gap'], y) - 1e-12
-                    for y in yrs if y >= TL1_SPEED_START)),
+        dict(item='TL1', tl=f"S = {p['L1']['tl']:.4f}", ambitious=f'S_amb max {amb3.max():.4f}',
+             ok=bool(np.all(p['L1']['tl'] >= amb3))),
         dict(item='TL2', tl=f"v = {p['L2']['tl']:.4f}", ambitious=f"v = {p['L2']['v']['ambitious']:.4f}",
              ok=p['L2']['tl'] <= p['L2']['v']['ambitious']),
         dict(item='TL3', tl='d = 1 (demolition and surge)', ambitious=f"d = {p['L3']['d']['ambitious']}",
@@ -1005,8 +1043,8 @@ def l4_size(size_base, olf_y, S, f, w):
 
 
 def tl1_level(p, years):
-    """The L1 at TL household-size level by model year: p['L1']['tl'] as a by-year dict (the resolved path), an array
-    (a Monte Carlo draw's own path) or a number (the v4.10 sensitivity, held)."""
+    """The L1 at TL household-size level by model year: p['L1']['tl'] as a number (the national 1991 household size,
+    held), a by-year dict or an array (the age-specific sensitivity: the resolved path, or a Monte Carlo draw's own)."""
     v = p['L1']['tl']
     if isinstance(v, dict):
         return np.array([by_year(v, int(y)) for y in years], float)
@@ -1015,8 +1053,8 @@ def tl1_level(p, years):
 
 
 def headship_evidence(HH, hist_S):
-    """The census headship evidence of L1 at TL for levers.json (household_headship.py): calibration, rates by census,
-    TL rates and their sources by knot, the common-basis check, the back-check, the share comparison."""
+    """The census headship evidence for levers.json L1 by_age (household_headship.py): calibration, rates by census,
+    by-age TL rates and their sources by knot, the common-basis check, the back-check, the share comparison."""
     cal = HH.census_calibration()
     rates = HH.census_rates()
     R, src, hb = HH.tl_rates(L1_TL_VARIANT)
@@ -1144,7 +1182,7 @@ def inputs(base, p, levels, ramp_name=None):
     info = dict(w=w, l4_held=None, levels=dict(lv), tl=tuple(L for L in LEVERS if lv.get(L) == 'tl'),
                 releases=releases_dwellings(levels))
     # L1 household size (the Reference S plus the gap to the propensity-B path, the draw's own gap in the pathway Monte
-    # Carlo; L1 at TL: the age-specific headship path, a Monte Carlo draw's own)
+    # Carlo; TL1: the historical maximum; the by-age sensitivity: its own path, a Monte Carlo draw's own)
     if 'L1' in lv:
         gap = np.array([by_year(p['L1']['gap'], int(y)) for y in years])
         if lv['L1'] == 'tl' and ramp_name != TL_FROM2027:
@@ -1190,7 +1228,8 @@ def inputs(base, p, levels, ramp_name=None):
     if 'L10' in lv:
         w10 = l10_weight(years)
         m10 = {t: 1.0 - w10 * (1.0 - v) for t, v in native(p, 'L10', lv['L10'], years).items()}
-        cls_eff = {k: 1.0 - w10 * (1.0 - c) for k, c in l10_class_factor(lv['L10'], years).items()}
+        cls_eff = {k: 1.0 - w10 * (1.0 - c)
+                   for k, c in l10_class_factor(lv['L10'], years, p['L10'].get('tl_variant')).items()}
         q10, corr = l10_chain(base, m10, cls_eff, typ)
         r8_eff = {t: 1.0 - w * (1.0 - np.asarray(r6[t], float)) for t in typ}
         for k in ('intensity', 'intensity_upfront'):
@@ -1300,31 +1339,30 @@ def pct(x, nd=1):
 
 # The level rule (Table 1 'rule' column): Reference = current practice held (2023 / 2025);
 # Moderate = the exact midpoint of Reference and Ambitious; Ambitious = a documented frontier (a value achieved in New
-# Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = the logical bound where the lever has one, otherwise the best value observed.
+# Zealand or elsewhere, an official projection, a peer-reviewed scenario or a documented requirement, cited); TL = TL_RULE.
 LEVEL_RULE = {
     'L1': ('2023 living arrangements held (Stats NZ propensity A)', 'official projection: Stats NZ propensity B',
-           'best observed: the lowest census headship of each age group (2013-2023), or propensity B where lower, '
-           'on the projected age structure'),
+           'best observed: the national household size of 1991 (no system-defined bound)'),
     'L2': ('2023 census vacancy', 'achieved in NZ: the 1996 census minimum',
            'best observed internationally: lowest nationwide rate in the OECD table, Switzerland 1.31% (2022)'),
     'L3': ('current demolition and surge', 'peer-reviewed scenario: -40% demolition (Pellan et al. 2024)',
-           'logical bound: no demolition'),
+           'system-defined bound: no demolition'),
     'L4': ('2023-2025 dwelling sizes', 'achieved in NZ: the smallest annual mean consented size',
-           'logical bound: zero space beyond the occupied area'),
+           'system-defined bound: zero space beyond the occupied area'),
     'L5': ('case-study typology medians', 'achieved: the top-15% case-study design density (HD q0.15)',
            'best observed: the densest case-study design'),
     'L6': ('the Reference share on previously developed land', 'achieved abroad: England 2018-21 (DLUHC 2022)',
            'best observed internationally: England\'s peak share, 80% (2008-2009; DCLG 2010)'),
     'L7': ('area-weighted soil orders', 'peer-reviewed scenario: SOC-aware allocation (-14.6%)',
-           'logical bound: the lowest soil order'),
+           'system-defined bound: the lowest soil order'),
     'L8': ('pooled case-study A1-A3', 'achieved: the top-15% case-study A1-A3 (HD q0.15)',
            'best observed: the lowest-carbon NZ case study'),
     'L9': ('business-as-usual A4-A5, every part -1%/yr (Resch et al. 2021)',
            'achieved: zero-emission site machinery, site energy -85% (City of Oslo Climate Agency 2025)',
-           'physically attainable: zero-emission transport and site energy; site waste as the Reference'),
+           'system-defined bound: zero-emission transport and site energy; site waste as the Reference'),
     'L10': ('the Horup et al. (2025) nine-scenario average production paths (S4 item paths)',
             'documented scenario: the lowest of the 9 prospective backgrounds by year (Horup et al. 2025, Table S3)',
-            'documented scenario bound: the Ambitious envelope with near-zero emissions cement and steel (IEA 2022 '
+            'most stringent documented scenario: the Ambitious envelope with near-zero emissions cement and steel (IEA 2022 '
             'definitions; near-zero share ' + L10_S_TEXT + ')')}
 
 
@@ -1362,8 +1400,7 @@ def lever_table(p):
         elif L == 'L1':
             mod = f"S 2050 = {by_year(q['S']['moderate'], 2050):.4f}"
             amb = f"S 2050 = {by_year(q['S']['ambitious'], 2050):.4f} (Reference {by_year(q['S_ref'], 2050):.4f})"
-            tl = (f"S 2050 = {by_year(q['tl_speed']['path'], 2050):.4f} (lowest observed headship by age group, or "
-                  f"propensity B where lower; speed-limited)")
+            tl = f"S = {q['tl']:.4f} ({q['tl_year']})"
         elif L == 'L2':
             src = q['tl_source']
             mod, amb = pct(q['v']['moderate'], 2), pct(q['v']['ambitious'], 2)

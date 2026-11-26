@@ -26,7 +26,6 @@ date), so a re-run with the pinned environment reproduces every figure byte for 
 sign in the data: in time series they are stacked down from zero (positives up from zero, the net a black line);
 in cumulative bars each negative band is an unfilled, unhatched segment outlined in its band colour hanging from the
 top of the positive stack, so the bar ends at the net total (figures/draw.py). No band is hatched.
-registry() lists every colour of every group.
 """
 import os
 import re
@@ -447,23 +446,6 @@ def save_figure(fig, name, note=None, source=None):
     raise_small_text(fig, name)
     audit.record(fig, name, note=note, source=source)
     save(fig, path)
-
-
-def registry():
-    """Every colour group of the palette: {group: {element: (colour, hatch)}}."""
-    return {
-        'bands': {b: (c.upper(), h) for b, (c, h) in BAND.items()},
-        'runs': {'REF': (REFERENCE.upper(), None), **{k: (v.upper(), None) for k, v in PATHWAY.items()},
-                 'TL': (TL.upper(), None), 'LOW': (SCENARIO['LOW']['color'].upper(), None),
-                 'HIGH': (SCENARIO['HIGH']['color'].upper(), None),
-                 'VHIGH': (SCENARIO['VHIGH']['color'].upper(), None)},
-        'stages': {k: (c.upper(), h) for k, (c, h) in STAGE.items()},
-        'history_bands': {k: (c.upper(), h) for k, (c, h) in HISTORY_BAND.items()},
-        'components': {k: (c.upper(), h) for k, (c, h) in COMPONENT.items()},
-        'materials': {code: (c.upper(), None) for code, _, c in MATERIAL},
-        'boundaries': {'AR': (AR.upper(), None), 'AtP': (ATP.upper(), None)},
-        'zones': {k: (z['color'].upper(), None) for k, z in ZONE.items()},
-    }
 
 
 # ---------------------------------------------------------------------------

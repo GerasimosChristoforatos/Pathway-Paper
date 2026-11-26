@@ -289,7 +289,7 @@ def main():
     if not ok7:
         fails.append(f'7 dummy TL lever changes the run (carbon {d_carbon:.2e}, floor area {d_gfa:.2e})')
     L += ['', '| run | releases dwellings | expected |', '|---|---|---|']
-    # L1 at TL alone releases none under the age-specific rule (households never fall): no pool
+    # L1 at TL alone releases none (households never fall: the population grows faster than the household size): no pool
     cases7 = [(f'{x} alone at TL', {x: 'tl'}, x == 'L2') for x in LV.LEVERS]
     cases7 += [('Moderate Pathway', LV.pathway_levers(LV.PATHWAY, 'moderate'), False),
                ('Ambitious Pathway', LV.pathway_levers(LV.PATHWAY, 'ambitious'), False),

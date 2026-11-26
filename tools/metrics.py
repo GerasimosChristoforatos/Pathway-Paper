@@ -154,9 +154,9 @@ def mc_metrics():
 
 
 PATHWAY_RUNS = {'reference': 'REF', 'moderate': 'pathway-moderate', 'ambitious': 'pathway-ambitious', 'tl': 'TL',
-                 'tl_l1_national_1991': 'TL-L1-national-1991'}
+                 'tl_l1_by_age': 'TL-L1-by-age'}
 PATHWAY_MC_RUNS = {'reference': 'REF', 'moderate': 'pathway_moderate', 'ambitious': 'pathway_ambitious', 'tl': 'TL',
-                   'tl_l1_national_1991': 'TL_L1_national_1991'}
+                   'tl_l1_by_age': 'TL_L1_by_age'}
 
 
 def pathway_metrics():

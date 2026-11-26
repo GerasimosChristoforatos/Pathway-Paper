@@ -55,7 +55,7 @@ LEVER_SUBRULE = {'L1': 'C', 'L2': 'B', 'L3': 'C', 'L4': 'B', 'L5': 'A', 'L6': 'C
                  'L10': 'C'}
 
 # Theoretical limit: TLn is Level 4 of Ln
-TL = {'TL': 'Theoretical Limit', 'TL1': 'Lowest observed headship by age', 'TL2': 'Lowest vacancy (Switzerland)',
+TL = {'TL': 'Theoretical Limit', 'TL1': 'Historical maximum household size', 'TL2': 'Lowest vacancy (Switzerland)',
       'TL3': 'No demolition', 'TL4': 'No extra space', 'TL5': 'Densest design', 'TL6': "England's peak brownfield share",
       'TL7': 'Lowest-carbon soils', 'TL8': 'Best-practice materials', 'TL9': 'Zero-emission sites and transport',
       'TL10': 'Near-zero cement and steel'}
@@ -196,8 +196,9 @@ MC_INPUT = {'z_pop': 'Population and household size',     # one z draws both (St
             'size': 'Dwelling size', 'complete': 'Completion rate', 'carbon': 'Carbon factors',
             'half_life': 'Replacement half-life'}
 LOE_AR = 'Cumulative LoE of AR'
-TL_L1_V410 = ('Theoretical Limit, L1 at TL: national 1991 household size regardless of age (v4.10; '
-              'sensitivity)')                                       # pathways.TL_L1_V410
+TL_L1_BY_AGE = 'Theoretical Limit, L1 at TL: lowest observed headship by age (sensitivity)'   # pathways.TL_L1_BY_AGE
+TL_L10_RUNS = {'TL-L10-all-classes': 'Theoretical Limit, L10: near-zero factor on all material classes (sensitivity)',
+               'TL-L10-share-100': 'Theoretical Limit, L10: near-zero share 100% by 2050 (sensitivity)'}
 LOE_ATP = 'Cumulative LoE of AtP'
 
 def run_label(run, scenario='REF'):
@@ -209,8 +210,10 @@ def run_label(run, scenario='REF'):
         return TL['TL']
     if run == 'TL-from2027':
         return TL_INSTANT
-    if run == 'TL-L1-national-1991':
-        return TL_L1_V410
+    if run == 'TL-L1-by-age':
+        return TL_L1_BY_AGE
+    if run in TL_L10_RUNS:
+        return TL_L10_RUNS[run]
     parts = run.split('-')
     head, setting = parts[0], parts[1] if len(parts) > 1 else None
     if head == PATHWAY:

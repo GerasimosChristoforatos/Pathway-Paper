@@ -1,5 +1,6 @@
-"""Age-specific household formation (headship) for L1 at TL: the lowest observed census headship of each age group,
-or the Stats NZ propensity-B projected rate where lower.
+"""Age-specific household formation (headship): the evidence for the L1 at TL caveat (households per person at every
+age) and the by-age sensitivity of L1 at TL, the lowest observed census headship of each age group, or the Stats NZ
+propensity-B projected rate where lower.
 
 Data (unmodified in data/raw, MANIFEST.csv; derived by data/build_census_headship.py):
   * census living arrangements by age, 2013, 2018 and 2023 (CEN23_FHH_036, people in households in occupied private
@@ -269,12 +270,6 @@ def back_check(hist_S):
         return t, None, 1.0
     yx = int(t['gap'].idxmax())
     return t, yx, float(t.loc[yx, 'observed_ratio'] / t.loc[yx, 'implied_ratio'])
-
-
-def households_per_person_fall(S_level, S_2050_2023_rates):
-    """The fall in households per person at every age needed to hold household size at S_level when the 2023 rates on
-    the 2050 population give S_2050_2023_rates: 1 - S_2050_2023_rates / S_level."""
-    return 1.0 - float(S_2050_2023_rates) / float(S_level)
 
 
 def one_person_direction():

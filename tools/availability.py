@@ -1,6 +1,5 @@
-"""Data and code availability statements and the third-party data table:
-outputs/reports/AVAILABILITY.md. The same text is in README.md (sections Data availability, Code availability and
-Third-party data). The Zenodo DOI is a placeholder until the archived release has one.
+"""Data and code availability statements and the third-party data table: outputs/reports/AVAILABILITY.md (README.md
+points to it). The Zenodo DOI is a placeholder until the archived release has one.
 
     python tools/availability.py      (tools/methods.py calls it)
 """

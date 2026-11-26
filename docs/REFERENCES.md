@@ -99,6 +99,9 @@ publisher's or catalogue record (Mendeley catalogue or the official page) or aga
 - Pauliuk, S., Carrer, F., Heeren, N., & Hertwich, E. G. (2024). Scenario analysis of supply- and demand-side
   solutions for circular economy and climate change mitigation in the global building sector. *Journal of Industrial
   Ecology*, 28(6), 1699–1715. doi:10.1111/jiec.13557. (RECC: full roll-out by 2035, the adoption window.)
+- Peduzzi, P., Concato, J., Kemper, E., Holford, T. R., & Feinstein, A. R. (1996). A simulation study of the number of
+  events per variable in logistic regression analysis. *Journal of Clinical Epidemiology*, 49(12), 1373–1379.
+  doi:10.1016/S0895-4356(96)00236-3. (The minimum of 10 events per variable for the population threshold.)
 - Pellan, M., Almeida, D., Louërat, M., & Habert, G. (2024). From limit values to carbon budgets: assessing
   comprehensive building stock decarbonisation strategies. *Building and Environment*, 256, 111505.
   doi:10.1016/j.buildenv.2024.111505. (Table 2; L3 Building lifetime: −40% demolition.)

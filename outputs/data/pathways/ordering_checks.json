@@ -2,27 +2,6 @@
   "violations": [],
   "carbon_year_reversals": [
     {
-      "lever": "L1",
-      "pair": "ambitious>=tl",
-      "years": [
-        2031,
-        2032,
-        2033,
-        2034,
-        2035,
-        2036,
-        2037,
-        2038,
-        2039,
-        2040,
-        2041,
-        2046,
-        2047,
-        2048
-      ],
-      "max_kt": 124.03421209870767
-    },
-    {
       "lever": "L2",
       "pair": "ambitious>=tl",
       "years": [
@@ -126,7 +105,7 @@
       "lever": "L1",
       "pair": "ambitious>=tl",
       "carbon_a_kt": 20731.073769602866,
-      "carbon_b_kt": 20653.07634496722,
+      "carbon_b_kt": 14006.496217788235,
       "ok": true
     },
     {

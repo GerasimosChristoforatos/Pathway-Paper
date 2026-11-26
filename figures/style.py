@@ -341,7 +341,7 @@ def fill(face, hatch=None, hatchcolor=None, alpha=1.0):
 # categorical groups in the diagnostics (sensitivity groups, the cases of D17): the Okabe-Ito
 # palette (Okabe & Ito 2008, Color Universal Design), distinguishable under the common colour-vision
 # deficiencies; one colour per group, always with a label
-# the tornado colours: palette.toml [one_at_a_time] (Fig7a, ED8, ED7: every draw.tornado)
+# the tornado colours: palette.toml [one_at_a_time] (Fig7a, ED7, ED8: every draw.tornado)
 TORNADO_LOW, TORNADO_HIGH, TORNADO_SINGLE = _OAT['low_end'], _OAT['high_end'], _OAT['single_alternative']
 # the Sobol bars (ED9) take palette.toml [sensitivity_indices]; QUALITATIVE is not drawn in a final
 # figure

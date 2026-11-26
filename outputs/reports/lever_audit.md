@@ -63,7 +63,7 @@ Stated exceptions: L10 follows its own path (no logistic weight); L1 at TL under
 
 | lever | Reference | Moderate | Ambitious | TL | Reference >= Moderate >= Ambitious >= TL |
 |---|---|---|---|---|---|
-| L1 | 25,502.8 | 23,058.5 | 20,731.1 | 20,653.1 | yes |
+| L1 | 25,502.8 | 23,058.5 | 20,731.1 | 14,006.5 | yes |
 | L2 | 25,502.8 | 24,767.9 | 24,043.4 | 21,622.2 | yes |
 | L3 | 25,502.8 | 25,015.7 | 24,528.6 | 22,865.3 | yes |
 | L4 | 25,502.8 | 24,321.6 | 23,047.2 | 17,488.4 | yes |
@@ -101,7 +101,7 @@ L10 moves maintenance by design: it scales the A1-A3 component of the in-window 
 |---|---|---|---|
 | L4 at TL | f = 1 | {'Detached': 0.4117, 'Townhouses': 0.0949, 'Apartments': 0.1102} | yes |
 | L5 at TL | {'Detached': 0.7095, 'Townhouses': 0.8194, 'Apartments': 0.8194} | r = 0.8194 | yes |
-| L1 at TL | S 2050 = 2.5916 (age-specific headship) | S 2050 = 2.5916 | yes |
+| L1 at TL | S = 2.7905 | S_amb max 2.6803 | yes |
 | L2 at TL | v = 0.0131 | v = 0.0401 | yes |
 | L3 at TL | d = 1 (demolition and surge) | d = 0.4 | yes |
 | L8 at TL | by year: {'Detached': 0.5299, 'Townhouses': 0.827, 'Apartments': 0.827} (2025) | r(y), 0.8270 (2025) | yes |

@@ -1,4 +1,4 @@
-Lever,PAS 2080,What it changes,Reference (current practice held),Ambitious (documented frontier),Theoretical Limit (logical bound or best observed),Sources
+Lever,PAS 2080,What it changes,Reference (current practice held),Ambitious (documented frontier),"Theoretical Limit (system-defined bound, best observed or most stringent documented scenario)",Sources
 L1 Household size,Avoid,"People per dwelling, hence households needed",Living arrangements of 2023 held,Living arrangements keep changing as 2001–2023 (official projection),"Lowest observed household formation at each age (censuses 2013–2023), approached no faster than any census interval",Stats NZ 2026; Stats NZ censuses
 L2 Vacancy,Avoid,Share of dwellings left empty,2023 census rate,Lowest rate observed in NZ (1996 census),Lowest internationally (Switzerland)⁹,Stats NZ censuses; OECD 2024
 L3 Building lifetime,Avoid,Demolition and replacement,Current demolition and replacement,40% fewer demolitions and rebuilds (national scenario),No demolition and no rebuild wave,Pellan et al. 2024

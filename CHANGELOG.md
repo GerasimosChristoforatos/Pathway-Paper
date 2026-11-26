@@ -2,74 +2,65 @@
 
 Current release first. "Numbers" means the reported results in `outputs/data/`.
 
-## model-v5.0.0: L1 at TL from age-specific headship (final model version)
+## model-v5.0.0: final model version (Theoretical Limit definitions, Extended Data renumbered, L10 TL sensitivities)
 
-**Numbers.** Only the TL family changes: L1 at TL, the TL runs (and their LOW / HIGH / VHIGH, from-2027 and fast
-re-occupation variants), the games and summaries that contain them, and the TL Monte Carlo. The Reference, the
-Moderate and Ambitious Pathways, S1-S3, every other lever and every Reference Monte Carlo, Sobol, one-at-a-time and
-AESA value are unchanged to the printed digit (identity gate against the v4.10.2 full outputs: every differing file
-traced to TL-family rows or new rows; the one non-TL column that moves is `central_draw_max_rel_diff` of
-`pathways/montecarlo_summary.csv`, a maximum over all runs including TL, 2.2877e-14 -> 2.2832e-14).
+**Numbers.** The Reference, the Moderate and Ambitious Pathways, S1-S3, the Theoretical Limit and every Monte Carlo,
+Sobol, one-at-a-time and AESA output equal v4.10.2. Identity gate against the v4.10.2 full outputs: every other
+difference is (i) a run or Shapley / waterfall subset with L1 at TL but without L2 at TL (the pool predicate), (ii) a
+new row, run or key, or (iii) a text field; `central_draw_max_rel_diff` of `pathways/montecarlo_summary.csv` (a
+maximum over all runs) moves at the 1e-14 level.
 
 | full profile | v4.10.2 | v5.0.0 |
 |---|---|---|
-| TL carbon 2026-2050 (kt); LoE AR / AtP | 4,177.0; 0.944 / 3.753 | 5,962.7; 1.347 / 5.358 |
-| P(LoE AR <= 1), TL (Monte Carlo, Wilson 95%) | 60.92% (59.56-62.26%) | 0.04% (0.01-0.15%; 2 of 5,000 draws) |
-| TL: 2050 population at which P = 50% | 6.693 M | not estimable (fewer than 10 draws within AR) |
-| Committed after 2050, TL (kt) | 1,750.6-2,240.8 | 2,752.3-3,532.1 |
-| L1 at TL alone (kt) | 14,160.7 | 20,653.1 |
-| LoE 2028-2050, TL (AR / AtP) | 0.420 / 1.671 | 0.858 / 3.411 |
-| Single-lever overlap, TL | 52.22% (44,635.5 vs 21,325.8 kt) | 48.77% (38,143.1 vs 19,540.1 kt) |
-| Shapley share of L1, levers at TL | 30.23% | 14.52% |
-| Avoid / Switch / Improve, levers at TL | 71.3% / 17.0% / 11.7% | 63.7% / 21.6% / 14.7% |
-| Fig. 5 TL position (demand / intensity reduction) | 81.8% / 33.0% | 69.0% / 36.9% |
-| Re-occupation share of need, TL | 0.4496 | 0.2876 |
+| TL carbon 2026-2050 (kt); LoE AR / AtP; P(LoE AR <= 1) | 4,177.0; 0.944 / 3.753; 60.92% | unchanged |
+| TL: 2050 population at which P = 50% | 6.693 M | unchanged |
+| L1 at TL alone (kt) (pool predicate) | 14,160.7 | 14,006.5 |
+| Single-lever sum, TL (kt); overlap | 44,635.5; 52.22% | 44,789.7; 52.39% |
+| Shapley share of L1 / L2, levers at TL | 30.23% / 9.66% | 30.85% / 8.91% |
+| Shapley share of TL1 / TL2, TL from the Moderate Pathway | 32.61% / 10.11% | 34.13% / 8.46% |
+| TL, L10 near-zero factor on all material classes (kt; LoE AR; P) | - | 3,907.3; 0.883; 74.66% |
+| TL, L10 near-zero share 100% by 2050 (kt; LoE AR; P) | - | 4,159.5; 0.940; 61.78% |
+| TL, L1 at TL from the lowest observed headship by age (kt; LoE AR; P) | - | 5,962.7; 1.347; 0.04% |
 
-The v4.10 setting (national 1991 household size regardless of age) is kept as a sensitivity row and reproduces the
-v4.10.2 TL exactly (4,177.0 kt; P = 60.92%).
+### Theoretical Limit definitions
+* TL rule (`levers.TL_RULE`): the most extreme value of each lever physically attainable while the housing system keeps
+  functioning: a bound the system itself defines where one exists (L3, L4, L7, L9), otherwise the best value observed
+  (L1, L2, L5, L6, L8) or the most stringent documented scenario (L10); behavioural change at the fastest observed rate.
+* L1 at TL: the national 1991 household size (2.7905), the census speed limit, never below Ambitious. It requires
+  11.7% fewer households per person at every age than the 2023 census rates in 2050, more shared living than observed
+  in any census since 1991 (back-check on the 2013, 2018 and 2023 Census living arrangements, CEN23_FHH_036 / 018 /
+  041, CEN13_FHH_026, and the ERP by age, DPE058AA; `household_headship.py`).
+* The age-specific rule (the lowest observed census headship of each age group, or Stats NZ propensity B where lower)
+  was evaluated in this version and is kept as a Supplementary sensitivity row (deterministic and Monte Carlo) with
+  SF16: under the author's TL rule the best observed household size is the national 1991 value; the by-age result is
+  reported, not adopted. The age-standardised sensitivity of v4.7-v4.10 is removed.
+* L2 at TL: Switzerland 1.31% (2022), the frictional-vacancy proxy; Sweden (OECD 0.25%) excluded, its national count
+  being rental flats in multi-dwelling buildings vacant for immediate letting over the whole stock.
+* L10 at TL: steel follows the IEA cement near-zero share path (8 / 27 / 93% in 2030 / 2035 / 2050) as a stated
+  assumption; the EDT1 L10 footnote quotes the GMST increase by 2100 of Horup et al. (2025) Table S1.
 
-### L1 at TL from age-specific headship
-* Data: Stats NZ 2013, 2018 and 2023 Census living arrangements (CEN23_FHH_036, CEN23_FHH_018, CEN23_FHH_041;
-  CEN13_FHH_026, CEN13_FHH_030, CEN13_FHH_031) and the estimated resident population by age (DPE058AA), unmodified
-  in `data/raw/census_living_arrangements/` and `data/raw/DPE058AA.csv` (MANIFEST rows with SHA-256);
-  `data/build_census_headship.py` writes the derived tables.
-* Headship by age group (0-14, 15-39, 40-64, 65+) per census, with households per family unit f_c and per person in
-  other living arrangements g_c calibrated so that each census reproduces its own stated family and other
-  multi-person households (stated basis, CEN23_FHH_041; unknowns allocated proportionally). Children stay a separate
-  category with zero headship. Gates (STOP on failure): 0 < f <= 1, 0 < g < 1, f within 5% of f_2013; common-basis
-  normalised rates within 2% of POPPR (15-39, 40-64, 65+); one-person people = one-person households.
-* The TL rate of each age group is the lower of its census minimum and the Stats NZ propensity-B rate of that year;
-  B enters as a ratio to its own 2023 base. S^TL = S_ref x (household size at TL rates / at 2023 rates) on the
-  projected age structure (ratio method), with the speed limit of v4.10 and never below L1 Ambitious. In the
-  Reference the speed limit binds in 2026-2027 and the Ambitious floor in 2040-2050 (S^TL 2050 = 2.5916 = L1
-  Ambitious).
-* Used everywhere L1 at TL enters: TL, Shapley games, waterfalls, Monte Carlo (per-draw ratio), instant TL, pool.
-* Sensitivity: "L1 at TL: national 1991 household size regardless of age (v4.10)" replaces the age-standardised row.
-* Back-check: the implied household size at the TL rates is at or above the observed one at every census 1991-2006
-  (ratio form, ERP age shares), so "best observed since 1991" holds.
+### New sensitivities
+* L10 at TL, every other lever at TL (deterministic and Monte Carlo; `levers.L10_TL_VARIANTS`): the cement near-zero
+  factor (125/850) on every class without a documented near-zero definition, steel keeping its own (an upper bound on
+  L10, not a documented scenario); the near-zero share 100% by 2050. Extended Data Fig. 8 panel b and Supplementary
+  Table 13 (`outputs/data/sensitivity/tl_sensitivity.csv`, new).
+* ED7 rows "2028-2050 only (pipeline years excluded)" and "Whole-life accounting"; `outputs/data/loe_2028_2050.csv`.
 
-### Re-occupation pool on actual releases
-* The pool now applies only in runs that release dwellings (cumulative releases R > 0 by 2050), not in every run
-  with L1 or L2 at TL: pool predicate now on actual releases; L1 at TL releases none under the age-specific rule.
-  Changed runs: 512 Shapley configurations (L1 at TL without L2 at TL), L1 at TL alone and the TL-from-Moderate
-  {L1 at TL} subset; TL itself is unaffected by the predicate (L2 at TL releases).
+### Method rules
+* The re-occupation pool applies only in runs that release dwellings (cumulative releases R > 0 by 2050): pool
+  predicate now on actual releases. L1 at TL releases none (households never fall), so the runs and subsets with L1
+  at TL but not L2 at TL change (above).
+* Population threshold: not extrapolated beyond the sampled populations; not estimable with fewer than 10 draws in the
+  rarer outcome class (Peduzzi et al. 1996); the Firth fit of the threshold uses the point estimate only.
 
-### Population threshold
-* Not extrapolated: outside the sampled population range it is reported as not reached.
-* Not estimable when fewer than 10 draws fall in the rarer outcome class (10 events per variable; Peduzzi et al.
-  1996); no curve is fitted and no line drawn (Fig. 7b, SF13). The Firth fit of the threshold and its bootstrap use
-  the point estimate only (`mcstats.firth(..., intervals=False)`).
-
-### Figures and tables
-* Absorption shading removed. Extended Data renumbered (ED3 = old SF4 + OLF panel; ED4 = old ED3 a-b; ED5 = old
-  SF3a + ED7; ED6 = old ED4; ED7 = old ED5 + two rows; ED8 = old ED6); old ED3c and ED8 move to the Supplementary
-  figures (SF3, SF8); SF16 headship by census added. Maps: `outputs/data/ed_number_map.csv`, `sf_number_map.csv`,
-  `st_number_map.csv`.
-* ED7 rows "2028-2050 only (pipeline years excluded)" and "Whole-life accounting (committed emissions at
-  construction)"; `outputs/data/loe_2028_2050.csv`. Full legends for every Extended Data figure; EDT1 footnotes for L3
-  and L10.
-
-### Release
+### Figures, tables and documentation
+* Extended Data renumbered (`outputs/data/ed_number_map.csv`): ED3 = old SF4 + OLF panel, ED4 = old ED3 a-b, ED5 =
+  old SF3a + ED7, ED6 = old ED4, ED7 = old ED5 + two rows, ED8 = old ED6 + panel b; old ED3c and ED8 are SF3 and SF8;
+  SF16 (headship by census) and ST13 are new (`sf_number_map.csv`, `st_number_map.csv`).
+* No notes, markers or row numbers are drawn on the Extended Data figures: they are legend text (FIGURES.md). Full
+  legends for every Extended Data figure; EDT1 footnotes for L3 and L10. Absorption shading removed.
+* README rewritten as a short overview; data provenance in `docs/DATA.md`; earlier CHANGELOG entries condensed.
+* Removed: `tools/ast_equivalence.py` (a one-off refactoring check) and unused helpers.
 * Version 5.0.0 in CITATION.cff, `.zenodo.json`, README and run_meta; the paper-DOI placeholder removed.
 
 ## model-v4.10.2: data freeze, IEA 2035 milestone, clean code and docs, publication metadata

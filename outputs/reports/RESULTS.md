@@ -112,7 +112,7 @@ Lower bound: B2/B4 events after 2050 at the 2050 factors held; C1-C4 with the ca
 | Reference | 9,554-10,662 | 5,529-5,702 | 86.3% | 8,014-11,314 |
 | Moderate Pathway | 7,121-8,081 | 4,199-4,330 | 86.3% | 5,916-8,530 |
 | Ambitious Pathway | 5,186-5,985 | 3,118-3,216 | 86.3% | 4,234-6,319 |
-| Theoretical Limit | 2,752-3,532 | 1,875-1,934 | 86.3% | 2,207-3,408 |
+| Theoretical Limit | 1,751-2,241 | 1,199-1,236 | 86.4% | 707-2,825 |
 
 ## Cumulative level of exceedance over 2028-2050 (after the observed building years 2026-2027)
 
@@ -123,7 +123,7 @@ Sum of carbon over the sum of the budgets, 2028-2050 (pathways/annual.csv, scena
 | Reference | 22,982 | 5.631 | 22.395 |
 | Moderate Pathway | 14,701 | 3.602 | 14.326 |
 | Ambitious Pathway | 8,975 | 2.199 | 8.746 |
-| Theoretical Limit | 3,500 | 0.858 | 3.411 |
+| Theoretical Limit | 1,714 | 0.420 | 1.671 |
 
 ## Single-lever reductions against the combined reduction (2026-2050)
 
@@ -133,4 +133,4 @@ The sum of the ten levers alone (Reference - Ln run) against the reduction of al
 |---|---|---|---|
 | Ambitious | 19,445 | 14,032 | 27.8% |
 | Moderate | 9,745 | 8,294 | 14.9% |
-| TL | 38,143 | 19,540 | 48.8% |
+| TL | 44,790 | 21,326 | 52.4% |

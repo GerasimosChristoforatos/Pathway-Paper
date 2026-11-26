@@ -32,7 +32,7 @@
   "Reference (median, 5th\u201395th percentile)",
   "Theoretical Limit (median, 5th\u201395th percentile)"
  ],
- "note": "P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.000, TL, all limits from 1 January 2027 (instant) 0.798, Theoretical Limit, L1 at TL: national 1991 household size regardless of age (v4.10; sensitivity) 0.609.",
+ "note": "P(cumulative LoE of AR <= 1): Reference 0.000, Moderate Pathway 0.000, Ambitious Pathway 0.000, Theoretical Limit 0.609, TL, all limits from 1 January 2027 (instant) 0.986, Theoretical Limit, L1 at TL: lowest observed headship by age (sensitivity) 0.000, Theoretical Limit, L10: near-zero factor on all material classes (sensitivity) 0.747, Theoretical Limit, L10: near-zero share 100% by 2050 (sensitivity) 0.618.",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,

@@ -2,9 +2,9 @@
 
 | Lever | Sub-rule | Typology | Parameter | Moderate | Ambitious | TL |
 |---|---|---|---|---|---|---|
-| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.528 | 2.592 | 2.592 |
-| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.528 | 2.592 | 2.592 |
-| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.528 | 2.592 | 2.592 |
+| L1 Household size | C | Detached | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
+| L1 Household size | C | Townhouses | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
+| L1 Household size | C | Apartments | household size 2050 (all typologies) | 2.528 | 2.592 | 2.79 |
 | L2 Vacancy rate | B | Detached | vacancy rate (all typologies) | 0.047 | 0.04013 | 0.01312 |
 | L2 Vacancy rate | B | Townhouses | vacancy rate (all typologies) | 0.047 | 0.04013 | 0.01312 |
 | L2 Vacancy rate | B | Apartments | vacancy rate (all typologies) | 0.047 | 0.04013 | 0.01312 |
@@ -67,4 +67,4 @@
 | L10 Production decarbonisation | C | Apartments | class factor c 2050, steel classes (k = 0.136, s = 0.93) | 1 | 1 | 0.1963 |
 
 1. L3: 40% fewer demolitions, including the recent redevelopment surge (France, 150,000 to 90,000 demolitions a year; Pellan et al. 2024). The surge is the part of net replacement above the long-run rate, i.e. demolition-and-rebuild.
-2. L10: the nine background scenarios of Horup et al. (2025, Table S1; integrated assessment model REMIND, Sacchi et al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the world develops (SSP1 sustainable, SSP2 middle of the road, SSP5 fossil-fuelled growth); RCPs (Representative Concentration Pathways) describe climate policy, named by the radiative forcing reached in 2100 in W m⁻² (RCP2.6 ≈ 2 °C, RCP1.9 ≈ 1.5 °C of warming); 'no climate policy' is the baseline. Three SSPs × three climate settings = nine futures for how electricity and industry decarbonise, which set how much cleaner each material becomes.
+2. L10: the nine background scenarios of Horup et al. (2025, Table S1, "Scenarios represented in the background system (using IAM model: REMIND)"; Sacchi et al. 2023). SSPs (Shared Socioeconomic Pathways) describe how the world develops (SSP1 sustainable, SSP2 middle of the road, SSP5 fossil-fuelled growth); RCPs (Representative Concentration Pathways) describe climate policy, named by the radiative forcing reached in 2100 in W m⁻². Table S1 gives the "GMST increase by 2100": about 1.6-1.8 °C for RCP2.6 and 1.0-1.4 °C for RCP1.9 (the Paris Agreement objective), and 2.3-4.5 °C with no climate policy. Three SSPs × three climate settings = nine futures for how electricity and industry decarbonise, which set how much cleaner each material becomes. At TL, near-zero emission cement and steel are added along the IEA cement near-zero share path (8 / 27 / 93% in 2030 / 2035 / 2050); steel follows the cement path as an assumption.

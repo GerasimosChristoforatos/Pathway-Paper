@@ -34,7 +34,7 @@ def groups():
     """Colours that appear together in one figure (name -> {label: hex})."""
     import naming as N
     return {
-        'Runs and boundaries (Fig4, ED7, D28)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
+        'Runs and boundaries (Fig3-Fig5, ED5, ED6)': dict({'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP,
                                                 'Reference': S.REFERENCE, N.TL['TL']: S.TL},
                                                **{(f'{p} {N.STRATEGIES[p]}' if p in N.STRATEGIES else
                                                    'Moderate / Ambitious Pathway'): c for p, c in S.PATHWAY.items()}),
@@ -44,9 +44,9 @@ def groups():
         'Boundary zones on white (every boundary figure)': {z['label']: zone_on_white(z) for z in S.ZONE.values()},
         # demolition replacement, the recent surge and unconsented additions are parts of Net replacement and share
         # its colour (one band in every figure), so only 'replacement' stands for them
-        # every band shown together (Fig1, Fig2, Fig5, D25, D26, D36): the negative bands as filled
+        # every band shown together (Fig1, Fig2, ED2-ED5, SF3, SF4): the negative bands as filled
         # areas below zero in time series and as outlines in cumulative bars
-        'Demand bands (Fig1, Fig2, Fig5, SF11, D25, D26, D36)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
+        'Demand bands (Fig1, Fig2, ED2-ED5, SF3, SF4)': {N.BANDS[b]: S.BAND[b][0] for b in S.BAND_ORDER
                                                            if b not in ('redevelopment', 'unconsented')},
         'The Pathways and TL against every strategy, growth, the Reference, the boundaries and the zones': dict(
             {N.STRATEGIES[k]: c for k, c in S.STRATEGY.items()},
@@ -54,12 +54,12 @@ def groups():
                'Reference': S.REFERENCE, 'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
         'Carbon components (Fig3c, diagnostics)': {N.COMPONENTS[c]: S.COMPONENT[c][0] for c in S.COMPONENT},
-        'Projection variants and boundaries (ED2, ED6)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Projection variants and boundaries (ED5)': dict({S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                              for k in S.SCENARIO},
                                                             **{'Acquired rights (AR)': S.AR,
                                                                'Ability to pay (AtP)': S.ATP}),
-        'Materials (Fig3b, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
-        'Life-cycle stages (Fig3a)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
+        'Materials (Fig2, diagnostics)': {lab: col for _, lab, col in S.MATERIAL},
+        'Life-cycle stages (Fig2, Fig3)': {N.STAGES[k]: S.STAGE[k][0] for k in S.STAGE},
         'History bands (Fig1)': {(N.BANDS.get(b) or N.BAND_DETAIL[b]): S.HISTORY_BAND[b][0] for b in S.HISTORY_BAND},
         # the new palette groups
         'Fig3 (runs, boundaries, zones on white)': dict(
@@ -67,14 +67,14 @@ def groups():
              N.PATHWAY_RUNS['pathway-ambitious']: S.PATHWAY_SETTING['ambitious'], N.TL['TL']: S.TL,
              'Acquired rights (AR)': S.AR, 'Ability to pay (AtP)': S.ATP},
             **{z['label']: zone_on_white(z) for z in S.ZONE.values()}),
-        'One at a time (Fig7a, ED8, ED7)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
+        'One at a time (Fig7a, ED7, ED8)': {'Input at low end': S.TORNADO_LOW, 'Input at high end': S.TORNADO_HIGH,
                                             'Single alternative case': S.TORNADO_SINGLE},
         # the palette-coverage groups
         'ED4b (components and the demand-band parts)': dict(
             {lab: col for c, (lab, col) in _ed3b().items()}),
-        'Replacement variants and the Reference (ED5, ED5, SF5, SF6)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
+        'Replacement variants and the Reference (ED5, SF5, SF6)': {S.SCENARIO[k]['label']: S.SCENARIO[k]['color']
                                                                         for k in S.SCENARIO},
-        'Typologies (SF11, ED3, SF9)': dict(S.TYPOLOGY),
+        'Typologies (ED3, SF9, SF11)': dict(S.TYPOLOGY),
         'Sobol indices (ED9)': {'Total effect': S.SOBOL['total'], 'First-order effect': S.SOBOL['first_order']},
         'Lag variants (SF2)': {'Zero lag': S.LAG_VARIANT[0], '17-month lag': S.LAG_VARIANT[17]},
         'Re-occupation (SF10)': {'Released dwellings (TL)': S.BAND['released_tl'][0],
@@ -223,7 +223,7 @@ def main():
         f"* **Reference** mid grey ({S.REFERENCE}); Low and High replacement greys with dashed and dotted lines. "
         "The Fig3b 2026-2050 column is the Reference colour; its Monte Carlo intervals capped error bars at "
         f"opacity {S.OPACITY['fig3b_interval_bars']:g} (palette.toml [opacity]).",
-         f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED8, ED7): input at its low end {S.TORNADO_LOW}, "
+         f"* **One at a time** (palette.toml [one_at_a_time]; Fig7a, ED7, ED8): input at its low end {S.TORNADO_LOW}, "
          f"at its high end {S.TORNADO_HIGH}, a single alternative case {S.TORNADO_SINGLE}.",
          f"* **Stacked bars and areas** are drawn seamless: each segment's edge is its own face colour at "
          f"{S.LW_SEAM:g} pt (no white borders, no anti-aliasing gaps); a hatch is drawn in a thin hatch colour only "

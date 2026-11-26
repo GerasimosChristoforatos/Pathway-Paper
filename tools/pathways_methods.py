@@ -237,8 +237,9 @@ def lines():
           'Every run follows the same order per year: gross_t -> overbuild payback -> re-occupation -> built_t. The '
           '2026 overbuild of the Reference (the market excess) is computed once and held fixed in every run '
           f"(the largest difference between runs is {p.get('identity_checks', {}).get('overbuild_excess_max_abs_diff_between_runs', 0.0)} "
-          'dwellings). Vacant and released dwellings are re-occupied through a common pool only in runs that release '
-          'dwellings (L1 or L2 at TL); all other runs absorb the starting surplus and overbuild by 2035 (choosing '
+          'dwellings). Vacant and released dwellings are re-occupied through a common pool only in runs that actually '
+          'release dwellings (L1 at TL with households falling or L2 at TL with the vacancy rate falling, cumulatively '
+          'by 2050); all other runs absorb the starting surplus and overbuild by 2035 (choosing '
           'the pool for any lever at its theoretical limit would shift the timing of building: +84.6 kt with a '
           'neutral TL item). In the Reference, the Moderate and Ambitious Pathways and every run without L1 or L2 at TL '
           f"there is no re-occupation pool: the starting surplus ({s0:,.0f} dwellings) and the {obs[0]}-{obs[-1]} "

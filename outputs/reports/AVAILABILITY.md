@@ -6,13 +6,13 @@ All input data are public: Stats NZ (population estimates and projections, famil
 
 ## Code availability
 
-The model (Python) is available at https://github.com/GerasimosChristoforatos/pathway-paper and archived at Zenodo, doi:[ZENODO-DOI] (version 5.0.0), under the MIT licence; its generated outputs and derived data are under CC BY 4.0. `python run_all.py --profile full` reproduces every number and figure.
+The model (Python) behind [paper title] is available at https://github.com/GerasimosChristoforatos/pathway-paper and archived at Zenodo, doi:[ZENODO-DOI] (version 5.0.0), under the MIT licence; its generated outputs and derived data are under CC BY 4.0. `python run_all.py --profile full` reproduces every number and figure.
 
 ## Third-party data
 
 | source | in the repository | licence / terms | redistributed |
 |---|---|---|---|
-| Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), census living arrangements and households (CEN23_FHH_036, CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026, CEN13_FHH_030, CEN13_FHH_031), ERP by age (DPE058AA), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
+| Stats NZ: building consents (Infoshare BLD468601), population estimates (DPE404001), census dwelling tables (CEN23_HOU_018, CEN23_TBT_001, DataInfo+ pages), census living arrangements and households (CEN23_FHH_036, CEN23_FHH_018, CEN23_FHH_041, CEN13_FHH_026), ERP by age (DPE058AA), family and household projections (POPPR_FHH_008, POPPR_FHH_010), national accounts (SNE022AA), earlier releases (popdata, histpopdata, oldhouseholddata, occ-unocc-2013) | data/raw/, data/*.xlsx, data/derived/ | CC BY 4.0 (Stats NZ) | yes |
 | United Nations, DESA, Population Division (2024), World Population Prospects 2024 | data/raw/UN_PPP2024_Output_PopTot.xlsx | CC BY 3.0 IGO | yes |
 | World Bank, World Development Indicators (release 2026-07-13) | data/raw/API_*.zip | CC BY 4.0 | yes |
 | OECD (2024), Affordable Housing Database, indicator HM1.1 (Figure HM1.1.2: vacant dwellings by country; lever L2 at TL) | data/derived/oecd_hm112_vacancy.csv (the country values only) | the OECD terms and conditions | the extract only (the source file is not stored) |

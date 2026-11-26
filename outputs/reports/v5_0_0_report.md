@@ -38,7 +38,7 @@ tag or release; no pull request edited. "v4.10.2" values come from the saved v4.
 | TL (central) | 4,177.0 | 0.944 | 3.753 | 60.92% (59.56-62.26%) |
 | TL, L1 at TL from the lowest observed census headship by age | 5,962.7 | 1.347 | 5.358 | 0.04% (0.01-0.15%) |
 
-The by-age rule needs 4.0% fewer households per person in 2050. It appears only in Supplementary Table 13, its Monte
+The by-age rule needs 4.0% fewer households per person in 2050. It appears only in Supplementary Table 12, its Monte
 Carlo row, the SF13 note and SF16 (headship by census); not in any Extended Data figure or table.
 
 ## 3. New L10 sensitivities (TL; every other lever at TL)
@@ -57,7 +57,7 @@ Carlo row, the SF13 note and SF16 (headship by census); not in any Extended Data
 * Placement: **ED8 panel b** (cumulative carbon on its own axis, centred on the TL; the two rows as bars from the TL
   line). Rows in ED7 would have stretched its LoE axes, which are centred on the Reference (5.76), and mixed a TL block
   into the boundary-definition rows.
-* Supplementary Table 13 (`outputs/data/sensitivity/tl_sensitivity.csv`, new): these rows, the by-age row, the instant
+* Supplementary Table 12 (`outputs/data/sensitivity/tl_sensitivity.csv`, new): these rows, the by-age row, the instant
   TL and fast re-occupation.
 
 ## 4. Identity gate (v4.10.2 -> v5.0.0, full outputs)
@@ -128,7 +128,7 @@ Extended Data (`outputs/data/ed_number_map.csv`):
 
 Supplementary figures (`sf_number_map.csv`): SF1, SF2 same; SF3 vacancy definition <- old ED3c; SF4 <- SF5; SF5 <-
 SF6; SF6 <- SF7; SF7 <- SF8; SF8 lever annual <- old ED8; SF9-SF15 same; SF16 headship by census (new).
-Supplementary tables (`st_number_map.csv`): ST1-ST12 unchanged; ST13 Theoretical Limit sensitivities (new).
+Supplementary tables (`st_number_map.csv`): ST1-ST11 unchanged; ST12 Theoretical Limit sensitivities (new); ST13 limitations register (was ST12).
 
 ## 8. Manuscript number map (v4.10.2 -> v5.0.0)
 
@@ -147,8 +147,8 @@ Supplementary tables (`st_number_map.csv`): ST1-ST12 unchanged; ST13 Theoretical
 | Single-lever sum vs combined, TL | 44,636 vs 21,326 kt (52.2%) | 44,790 vs 21,326 kt (52.4%) | metrics.json |
 | Methods TL rule | best value observed; logical bound where attainable | the author's TL rule (section 1) | levers.TL_RULE |
 | Methods L1 at TL caveat | - | 11.7% sentence (section 1) | METHODS_DRAFT.md |
-| New: TL L10 sensitivities (ED8 b, ST13) | - | 3,907 kt / 0.883 / 74.7%; 4,160 kt / 0.940 / 61.8% | sensitivity/tl_sensitivity.csv |
-| New: TL with L1 by age (ST13) | - | 5,963 kt / 1.35 / 0.04% | sensitivity/tl_sensitivity.csv |
+| New: TL L10 sensitivities (ED8 b, ST12) | - | 3,907 kt / 0.883 / 74.7%; 4,160 kt / 0.940 / 61.8% | sensitivity/tl_sensitivity.csv |
+| New: TL with L1 by age (ST12) | - | 5,963 kt / 1.35 / 0.04% | sensitivity/tl_sensitivity.csv |
 | ED numbering in text | see section 7 | | ed_number_map.csv |
 
 ## 9. Repository cleanup
@@ -198,9 +198,7 @@ tests); data and licences (data freeze, provenance in docs/DATA.md, MIT / CC BY 
 
 ## 11. AI-attribution check
 
-A case-insensitive search of every tracked file and file name for the names of AI tools and their vendor, "generated
-with", "co-authored", "LLM", "AI-generated" and "written by AI": no hit other than the standard Python `.gitignore`
-template line about the Abstra framework. The assistant configuration file and folder are absent. Commits on the branch
+A case-insensitive search of every tracked file and file name for tool and vendor names and for attribution phrases: no hit other than the standard Python `.gitignore` template line about the Abstra framework. The assistant configuration file and folder are absent. Commits on the branch
 are authored and committed as Gerras, with no trailers. Two merge commits on main (960dd56 and 6c96d51, 1 October 2026,
 "Merge pull request #1 / #3") carry the name of their source branch, which names a coding tool; changing them would
 need a history rewrite and force-push of main, which was not done.
@@ -215,8 +213,44 @@ need a history rewrite and force-push of main, which was not done.
 4. OECD licence wording "the OECD terms and conditions": unverified (the OECD site is not reachable from this
    environment).
 5. ED legends were drafted from the figure contents: review the wording.
-6. SF16 position in the SI order; ST13 is new (its place in the SI order).
+6. SF16 position in the SI order (ST12/ST13 now follow the SI's first-citation order).
 7. `outputs/reports/v5_0_0_report.md` is hand-written; `run_all.py` rebuilds `outputs/reports/`, so a later full run
    deletes it (`git checkout -- outputs/reports/v5_0_0_report.md`).
 8. Zenodo DOI and paper title placeholders ([ZENODO-DOI] in AVAILABILITY.md, [PAPER TITLE] in README) until release.
 9. Old tags still need the command block; the branch `tmp/attribution-test` still exists on GitHub.
+
+## 13. Text sync with the manuscript and SI
+
+Numbers: identity gate against the committed v5.0.0 outputs: 111 of 113 data files byte-identical; the two others
+differ in text only (`pathways/theoretical_limit.json` definition note; `st_number_map.csv`). Every model value is
+unchanged: Reference 25,503 kt (5.761 / 22.914); Moderate 17,209; Ambitious 11,471; TL 4,177.0 kt (0.944 / 3.753;
+P 60.92%, Wilson 59.56-62.26%); instant TL 3,034; fast re-occupation 3,460; TL by age 5,963 (1.347); L10 rows 3,907.3
+and 4,159.5; Shapley L1 at TL 30.85%; threshold 6.693 M.
+
+1. Supplementary Tables: ST12 = Theoretical Limit sensitivities, ST13 = limitations register (was ST12)
+   (`figure_plan.SI_TABLES`, `ST_PREVIOUS`; `st_number_map.csv` statuses "added" / "renumbered"; the ED8 legend,
+   `indexes.py`, `tools/sensitivity_tables.py`, CHANGELOG, this report).
+2. Wording: ED2 legend (L1 at TL returning to the 1991 maximum of 2.79, reached in mid-2037); SF16 title and note
+   ("the by-age limit (sensitivity)"); `theoretical_limit.json` definition note ("L7 at TL applies to the floor area
+   still built on new land under L6 at TL (80%)", from `levers.L6_S_TL`); METHODS_DRAFT.md demand-band and
+   run-order paragraphs and the TL-constraints paragraph: the pool only in runs that actually release dwellings
+   (`tools/release_methods.py`, `tools/pathways_methods.py`); CITATION.cff abstract with the TL rule.
+3. Data: `CEN13_FHH_030.csv`, `CEN13_FHH_031.csv` (read by no code; `data/build_census_headship.py` uses only
+   CEN13_FHH_026) and `national_population_estimates_june_2026.html` (not read, not cited) removed with their MANIFEST
+   rows and mentions (docs/DATA.md, `tools/availability.py`).
+4. References: Sacchi et al. corrected from 2023 to 2022 (*Renewable and Sustainable Energy Reviews* 160, 112311) in
+   `levers.py` (EDT1 L10 footnote) and added to docs/REFERENCES.md (Horup et al. Table S1 prints "Sacchi et al., 2023");
+   Statistics Sweden added; the Swiss FSO entry dated 2022; IEA (2023) already listed; docs/DATA.md has a table of the
+   parameter values taken from publications (IEA 2023 and 2022, Swiss FSO, Statistics Sweden, DCLG).
+5. Numbering: files and `sf_number_map.csv` / `ed_number_map.csv` match SF1-SF16, ED1-ED9 and EDT1. Fixed
+   cross-references: "SF1-SF15" ranges (`figure_plan.py`, `indexes.py`, `layout.py`); "Extended Data Fig. 5" for the
+   AESA row not shown (now Fig. 7; `boundaries.py`); "Extended Data Fig. 8 row 1" and "rows 4 and 5" replaced by the
+   row names (ED8 has no row numbers; `figures/paper_extended.py`, `tools/baseline_draft.py`).
+6. Paper-title placeholder "[paper title]": README.md (line 3), CITATION.cff (message), AVAILABILITY.md (code
+   availability statement; `tools/availability.PAPER_TITLE`).
+7. Stale-wording grep ("100% brownfield", "age-standardised", Sweden, "tl_v410", "TL-TL1-age-standardised", "4,171",
+   "3,455", "5,951", "61.1%", "21,331"): the only remaining hits are the CHANGELOG entries of earlier versions (they
+   describe those versions), the OECD source row and the exclusion note for Sweden (`data/build_oecd_vacancy.py`,
+   `data/derived/oecd_hm112_vacancy.csv`, `levers.L2_TL_NOTE`), numeric coincidences inside data rows, and this
+   report's history sections.
+

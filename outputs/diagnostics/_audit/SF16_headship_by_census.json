@@ -62,7 +62,7 @@
   "b)",
   "c)"
  ],
- "note": "Headship = households per person with a stated role in family nucleus (CEN23_FHH_036), households per family unit and per other person calibrated to each census (CEN23_FHH_041). The L1 at TL rate is the lowest census rate of the group or the propensity-B rate where lower; the minima may come from different census years (family coding changed in 2018 and 2023).",
+ "note": "Headship = households per person with a stated role in family nucleus (CEN23_FHH_036), households per family unit and per other person calibrated to each census (CEN23_FHH_041). The by-age limit (sensitivity) is the lowest census rate of the group or the propensity-B rate where lower; the minima may come from different census years (family coding changed in 2018 and 2023).",
  "maintenance_drawn": false,
  "maintenance_where": [],
  "boundary_drawn": false,
